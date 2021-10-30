@@ -35,21 +35,26 @@
     </style>
     <script type="module">
       import Menu_Buddy from "./src/Menu_Buddy.mjs";
+      import Menu_Buddy_Button from "./src/Menu_Buddy_Btn.mjs";
       customElements.define(Menu_Buddy.name, Menu_Buddy);
+      customElements.define(Menu_Buddy_Button.name, Menu_Buddy_Button);
 
       window.onload = main;
       function main()
       {
+        const nav_menu = Init_Menu("nav_menu", On_Click_Up);
+        nav_menu.addEventListener("clickoption", On_Option_Click);
+
         const menu_buddy = Init_Menu("menu_buddy", On_Click_Up);
         menu_buddy.addEventListener("clickoption", On_Option_Click);
-
-        const nav_menu = Init_Menu("nav_menu", On_Click_Up2);
-        nav_menu.addEventListener("clickoption", On_Option_Click2);
-
         const menu_btn = document.getElementById("menu_btn");
         menu_btn.addEventListener("click", On_Menu_Btn_Click);
 
+        const btn_menu = Init_Menu("menu-buddy-btn", On_Click_Up);
+        btn_menu.addEventListener("clickoption", On_Option_Click);
+
         window.addEventListener("click", menu_buddy.Hide);
+        window.addEventListener("click", () => btn_menu?.menu_buddy?.Hide());
       }
 
       function Init_Menu(id, On_Click_Up)
@@ -119,17 +124,6 @@
         const option = event.detail;
         alert(option.title);
       }
-
-      function On_Click_Up2(event)
-      {
-        alert("up2 clicked");
-      }
-
-      function On_Option_Click2(event)
-      {
-        const option = event.detail;
-        alert(option.title);
-      }
     </script>
   </head>
   <body>
@@ -139,6 +133,8 @@
       <main>
         <button id="menu_btn">See the universe!</button>
         <menu-buddy id="menu_buddy" style-src="menu.css"></menu-buddy>
+
+        <menu-buddy-btn id="menu-buddy-btn" menu-style-src="menu.css" show-pos="bottom">Pow!</menu-buddy-btn>
       </main>
     </nav>
   </body>
