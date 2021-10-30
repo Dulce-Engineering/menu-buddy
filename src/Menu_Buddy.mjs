@@ -154,7 +154,7 @@
       return menu_div;
     }
 
-    Toggle()
+    Toggle(src_elem, pos_str)
     {
       let res;
 
@@ -165,7 +165,7 @@
       }
       else
       {
-        this.Show();
+        this.Show(src_elem, pos_str);
         res = true;
       }
 
@@ -177,39 +177,70 @@
       this.style.display = "none";
     }
 
-    Show()
+    Show(src_elem, pos_str)
     {
       this.style.left = "";
       this.style.top = "";
       this.Close_All();
       this.style.display = "inline-block";
       this.Open(this.root_div, null);
+
+      const this_rect = this.getBoundingClientRect();
+      let x = this_rect.x;
+      let y = this_rect.y;
+      if (src_elem)
+      {
+        const src_rect = src_elem.getBoundingClientRect();
+        if (pos_str == "top")
+        {
+          x = src_rect.left;
+          y = src_rect.top - this_rect.height;
+        }
+        if (pos_str == "bottom")
+        {
+          x = src_rect.left;
+          y = src_rect.bottom;
+        }
+        if (pos_str == "left")
+        {
+          x = src_rect.left - this_rect.width;
+          y = src_rect.top;
+        }
+        if (pos_str == "right")
+        {
+          x = src_rect.right;
+          y = src_rect.top;
+        }
+      }
+      this.style.left = x + "px";
+      this.style.top = y + "px";
+
       this.Confine();
     }
 
     Confine()
     {
       const padding = 10;
-      const docRect = window.document.body.getBoundingClientRect();
-      const thisRect = this.getBoundingClientRect();
-      let x = thisRect.x;
-      let y = thisRect.y;
+      const doc_rect = window.document.body.getBoundingClientRect();
+      const this_rect = this.getBoundingClientRect();
+      let x = this_rect.x;
+      let y = this_rect.y;
 
-      if (thisRect.right + padding > docRect.right)
+      if (this_rect.right + padding > doc_rect.right)
       {
-        x -= thisRect.right - docRect.right + padding;
+        x -= this_rect.right - doc_rect.right + padding;
       }
-      if (thisRect.left - padding < docRect.left)
+      if (this_rect.left - padding < doc_rect.left)
       {
-        x += docRect.left - thisRect.left + padding;
+        x += doc_rect.left - this_rect.left + padding;
       }
-      if (thisRect.bottom + padding > docRect.bottom)
+      if (this_rect.bottom + padding > doc_rect.bottom)
       {
-        y -= thisRect.bottom - docRect.bottom + padding;
+        y -= this_rect.bottom - doc_rect.bottom + padding;
       }
-      if (thisRect.top + padding < docRect.top)
+      if (this_rect.top + padding < doc_rect.top)
       {
-        y += docRect.top - thisRect.top + padding;
+        y += doc_rect.top - this_rect.top + padding;
       }
       this.style.left = x + "px";
       this.style.top = y + "px";
