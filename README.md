@@ -13,7 +13,7 @@ Optional string indicating if menu should be visible. Any value acceptable to ma
 - **menu**  
 Configuration object indicating menu structure. See "Configuration" section for more details.
 - **style_src**  
-Optional url string indicating which styles file to use
+Optional url string indicating which styles file to use.
 - **show**  
 Optional string indicating if menu should be visible. Any value acceptable to make menu visible.
 
@@ -51,8 +51,10 @@ menu =
 # Menu Buddy Button
 
 ## Attributes
+- **btn-style-src**  
+Optional url string indicating which styles file to use for the button.
 - **menu-style-src**  
-Optional url string indicating which styles file to use.
+Optional url string indicating which styles file to use for the menus.
 - **show-pos**  
 Optional string indicating position of menu relative to button. Can be "top", "bottom", "left", or "right".
 

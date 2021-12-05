@@ -18,9 +18,13 @@ class Menu_Buddy_Button extends HTMLElement
     this.Render();
   }
 
-  static observedAttributes = ["menu-style-src", "show-pos"];
+  static observedAttributes = ["btn-style-src", "menu-style-src", "show-pos"];
   attributeChangedCallback(attrName, oldValue, newValue)
   {
+    if (attrName == "btn-style-src")
+    {
+      this.btn_style_src = newValue;
+    }
     if (attrName == "menu-style-src")
     {
       this.menu_style_src = newValue;
@@ -55,7 +59,16 @@ class Menu_Buddy_Button extends HTMLElement
 
   Render()
   {
+    if (this.btn_style_src)
+    {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = this.btn_style_src;
+      this.shadowRoot.append(link);
+    }
+
     this.btn = document.createElement("button");
+    this.btn.id = "btn";
     this.btn.append(...this.childNodes);
     this.btn.addEventListener("click", this.On_Menu_Btn_Click);
 

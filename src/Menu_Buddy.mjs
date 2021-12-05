@@ -79,6 +79,78 @@
 
     Render()
     {
+      const def_style =
+      `
+        :host
+        {
+          box-shadow: 3px 3px 5px 0px #0006;
+          background-color: #ddd;
+          width: 150px;
+          display: none;
+          position: absolute;
+        }
+        .menu 
+        {
+          display: inline-flex;
+          flex-direction: column;
+          transition: width 0.25s;
+          overflow: hidden;
+          padding: 5px 0px;
+        }
+        .menu_title
+        {
+          border: none;
+          padding: 5px 10px 5px 10px;
+          text-align: left;
+          cursor: pointer;
+          background-color: transparent;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          font-weight: bold;
+        }
+        .menu_title svg
+        {
+          margin-right: 6px;
+        }
+        .menu_title:hover
+        {
+          background-color: #ccc;
+        }
+        .menu_title_prev
+        {
+          margin-right: 5px;
+          transform: rotateZ(270deg);
+          display: inline-block;
+          vertical-align: bottom;
+          width: 10px;
+        }
+        .menu_option
+        {
+          border: none;
+          padding: 5px 10px 5px 40px;
+          text-align: left;
+          cursor: pointer;
+          background-color: transparent;
+          height: 30px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .menu_option:hover
+        {
+          background-color: #ccc;
+        }
+        .custom_option
+        {
+          align-items: center;
+        }
+        #close_img
+        {
+          xwidth: 20px;
+        }
+      `;
+
       this.addEventListener("click", this.On_This_Click);
 
       if (this.style_src)
@@ -87,6 +159,12 @@
         link.rel = "stylesheet";
         link.href = this.style_src;
         this.shadowRoot.replaceChildren(link);
+      }
+      else
+      {
+        const style = document.createElement("style");
+        style.innerHTML = def_style;
+        this.shadowRoot.replaceChildren(style);
       }
 
       this.root_div = this.Create_Menu(this.shadowRoot, this.menu_def);
@@ -113,12 +191,27 @@
         close_btn.style.whiteSpace = "nowrap";
         if (parent_div)
         {
-          close_btn.innerHTML = "<span class='menu_title_prev'>&bigtriangleup;</span><span>" + menu.title + "</span>";
-          close_btn.addEventListener("click", (event) => this.On_Open_Btn_Click(event, menu_div, parent_div));
+          const arrow_back =
+            `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+              <path d="M0 0h24v24H0V0z" fill="none"/>
+              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>`;
+          close_btn.innerHTML = 
+            arrow_back +
+            "<span>" + menu.title + "</span>";
+          close_btn.addEventListener("click", event => this.On_Open_Btn_Click(event, menu_div, parent_div));
         }
         else
         {
-          close_btn.innerText = menu.title;
+          const close =
+            `<svg id="close_img" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+              <path d="M0 0h24v24H0V0z" fill="none"/>
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+            </svg>`;
+          close_btn.innerHTML = 
+            close +
+            "<span>" + menu.title + "</span>";
+          close_btn.addEventListener("click", this.Hide);
         }
         close_btn.classList.add("menu_title");
         menu_div.append(close_btn);
@@ -129,11 +222,18 @@
 
           if (option.options)
           {
+            const arrow_forward = 
+              `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+                <path d="M0 0h24v24H0V0z" fill="none"/>
+                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
+              </svg>`;
             option_btn = document.createElement("button");
             option_btn.style.whiteSpace = "nowrap";
-            option_btn.innerHTML = "<span>" + option.title + "</span><span class='menu_option_next'>&bigtriangleup;</span>";
+            option_btn.innerHTML = 
+              "<span>" + option.title + "</span>" +
+              arrow_forward;
             const option_div = this.Create_Menu(parent, option, true, menu_div);
-            option_btn.addEventListener("click", (event) => this.On_Open_Btn_Click(event, menu_div, option_div));
+            option_btn.addEventListener("click", event => this.On_Open_Btn_Click(event, menu_div, option_div));
           }
           else if (typeof(option.title) == "object")
           {
@@ -215,7 +315,7 @@
       this.style.left = x + "px";
       this.style.top = y + "px";
 
-      this.Confine();
+      //this.Confine();
     }
 
     Confine()
@@ -234,7 +334,7 @@
       {
         x += doc_rect.left - this_rect.left + padding;
       }
-      if (this_rect.bottom + padding > doc_rect.bottom)
+      if (this_rect.bottom + padding > doc_rect.height)
       {
         y -= this_rect.bottom - doc_rect.bottom + padding;
       }
