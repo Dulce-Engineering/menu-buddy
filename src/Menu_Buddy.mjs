@@ -1,5 +1,4 @@
-
-  class Menu_Buddy extends HTMLElement
+class Menu_Buddy extends HTMLElement
   {
     static name = "menu-buddy";
 
@@ -88,6 +87,7 @@
           width: 150px;
           display: none;
           position: absolute;
+          z-index: 1;
         }
         .menu 
         {
@@ -136,6 +136,7 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
+          box-sizing: border-box;
         }
         .menu_option:hover
         {
