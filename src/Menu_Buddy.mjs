@@ -36,22 +36,28 @@ class Menu_Buddy extends HTMLElement
       this.Render();
     }
 
+    set width(value)
+    {
+      this.menu_width = value;
+      this.style.width = this.menu_width;
+    }
+
     // Events =====================================================================================
 
     On_Select_Btn_Click(event, option)
     {
       const new_event = new CustomEvent("clickoption", {detail: option});
       this.dispatchEvent(new_event);
+
+      if (option.on_click_fn)
+      {
+        option.on_click_fn(event, option);
+      }
     }
 
     On_Open_Btn_Click(event, menu_div, option_div)
     {
       this.Open(option_div, menu_div);
-    }
-
-    On_This_Click(event)
-    {
-      event.stopPropagation();
     }
 
     // Rendering ==================================================================================
@@ -84,9 +90,8 @@ class Menu_Buddy extends HTMLElement
         {
           box-shadow: 3px 3px 5px 0px #0006;
           background-color: #ddd;
-          width: 150px;
           display: none;
-          position: absolute;
+          position: fixed;
           z-index: 1;
         }
         .menu 
@@ -152,8 +157,6 @@ class Menu_Buddy extends HTMLElement
         }
       `;
 
-      this.addEventListener("click", this.On_This_Click);
-
       if (this.style_src)
       {
         const link = document.createElement("link");
@@ -166,6 +169,17 @@ class Menu_Buddy extends HTMLElement
         const style = document.createElement("style");
         style.innerHTML = def_style;
         this.shadowRoot.replaceChildren(style);
+      }
+
+      document.addEventListener("scroll", this.Hide);
+      
+      if (this.menu_width)
+      {
+        this.style.width = this.menu_width;
+      }
+      else
+      {
+        this.style.width = "100px";
       }
 
       this.root_div = this.Create_Menu(this.shadowRoot, this.menu_def);
