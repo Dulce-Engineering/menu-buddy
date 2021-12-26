@@ -1,6 +1,6 @@
 :host
 {
-  width: 150px;
+  width: 200px;
   box-sizing: border-box;
 }
 .menu 
@@ -17,6 +17,10 @@
   text-align: left;
   cursor: pointer;
   background-color: transparent;
+  display: flex;
+  align-items: center;
+  height: 34px;
+  column-gap: 5px;
 }
 .menu_title:hover
 {
@@ -33,12 +37,14 @@
 .menu_option
 {
   border: none;
-  padding: 5px 10px 5px 25px;
+  padding: 5px 10px 5px 40px;
   text-align: left;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   background-color: transparent;
+  align-items: center;
+  height: 34px;
 }
 .menu_option:hover
 {

@@ -17,19 +17,19 @@
         padding: 20px;
         font-size: 24px;
       }
-      nav
+      #main
       {
         display: flex;
         flex: 1;
         flex-direction: row;
-        padding-left: 20px;
+        xpadding-left: 20px;
         background-color: lightblue;
       }
-      main
+      section
       {
         flex: 1;
         background-color: #fff;
-        margin-left: 20px;
+        xmargin-left: 20px;
         padding: 20px;
       }
     </style>
@@ -128,9 +128,9 @@
   </head>
   <body>
     <header>Menu Buddy Samples</header>
-    <nav>
+    <div id="main">
       <menu-buddy id="nav_menu" style-src="nav.css" show="true"></menu-buddy>
-      <main>
+      <section>
         <p>The following button triggers rendering of a menu programmatically.</p>
         <button id="menu_btn">Manual Menu</button>
         <menu-buddy id="menu_buddy" style-src="menu.css"></menu-buddy>
@@ -138,7 +138,7 @@
         <p>The following button is an instance of "Menu Buddy Button" which automates the task of rendering a 
           dropdown menu with relative positioning.</p>
         <menu-buddy-btn id="menu-buddy-btn" menu-style-src="menu.css" show-pos="bottom">Menu Buddy Button</menu-buddy-btn>
-      </main>
-    </nav>
+      </section>
+    </div>
   </body>
 </html>
