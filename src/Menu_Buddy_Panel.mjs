@@ -8,6 +8,9 @@ class Menu_Buddy_Panel extends HTMLElement
   {
     super();
     this.attachShadow({mode: 'open'});
+    this.z_index_show = "1";
+    this.z_index_hide = "-1";
+    this.timeout_hide = 500;
 
     this.Show = this.Show.bind(this);
     this.Hide = this.Hide.bind(this);
@@ -19,13 +22,9 @@ class Menu_Buddy_Panel extends HTMLElement
     this.Render();
   }
 
-  static observedAttributes = ["btn-style-src", "menu-style-src", "show-pos"];
+  static observedAttributes = ["menu-style-src", "show-pos"];
   attributeChangedCallback(attrName, oldValue, newValue)
   {
-    if (attrName == "btn-style-src")
-    {
-      this.btn_style_src = newValue;
-    }
     if (attrName == "menu-style-src")
     {
       this.menu_style_src = newValue;
@@ -50,7 +49,7 @@ class Menu_Buddy_Panel extends HTMLElement
     this.menu_buddy.Open(this.menu_buddy.root_div, null);
 
     this.menu_buddy.style.width = "200px";
-    this.screen.style.zIndex = "1";
+    this.screen.style.zIndex = this.z_index_show;
     this.screen.style.backgroundColor = "#0008";
   }
 
@@ -58,7 +57,7 @@ class Menu_Buddy_Panel extends HTMLElement
   {
     this.menu_buddy.style.width = "0px";
     this.screen.style.backgroundColor = "#0000";
-    setTimeout(() => this.screen.style.zIndex = "-1", 500);
+    setTimeout(() => this.screen.style.zIndex = this.z_index_hide, this.timeout_hide);
   }
 
   Toggle()
@@ -98,7 +97,6 @@ class Menu_Buddy_Panel extends HTMLElement
 
     this.screen = this.Render_Screen();
     this.shadowRoot.append(this.screen, this.menu_buddy);
-    //this.shadowRoot.append(this.menu_buddy);
   }
 
   Render_Screen()
