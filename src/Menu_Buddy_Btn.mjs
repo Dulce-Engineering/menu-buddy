@@ -45,6 +45,15 @@ class Menu_Buddy_Button extends HTMLElement
     }
   }
 
+  set width(value)
+  {
+    this.menu_width = value;
+    if (this.menu_buddy)
+    {
+      this.menu_buddy.width = this.menu_width;
+    }
+  }
+
   On_Document_Click(event)
   {
     if (!event.path.includes(this) && !event.path.includes(this.menu_buddy))
@@ -55,7 +64,6 @@ class Menu_Buddy_Button extends HTMLElement
 
   On_Menu_Btn_Click(event)
   {
-    event.stopPropagation();
     this.menu_buddy.Toggle(this.btn, this.show_pos);
   }
   
@@ -85,6 +93,7 @@ class Menu_Buddy_Button extends HTMLElement
     this.btn.addEventListener("click", this.On_Menu_Btn_Click);
 
     this.menu_buddy = new Menu_Buddy(); // document.createElement("menu-buddy");
+    this.menu_buddy.width = this.menu_width;
     this.menu_buddy.id = "btn_menu";
     this.menu_buddy.style_src = this.menu_style_src;
     this.menu_buddy.menu = this.menu_def;

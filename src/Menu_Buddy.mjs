@@ -36,6 +36,12 @@ class Menu_Buddy extends HTMLElement
       this.Render();
     }
 
+    set width(value)
+    {
+      this.menu_width = value;
+      this.style.width = this.menu_width;
+    }
+
     // Events =====================================================================================
 
     On_Select_Btn_Click(event, option)
@@ -80,6 +86,11 @@ class Menu_Buddy extends HTMLElement
     Render()
     {
       document.addEventListener("scroll", this.Hide);
+
+      if (this.menu_width)
+      {
+        this.style.width = this.menu_width;
+      }
 
       this.shadowRoot.replaceChildren(this.Get_Styles());
       this.root_div = this.Render_Menu(this.shadowRoot, this.menu_def);
