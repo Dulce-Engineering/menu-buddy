@@ -64,7 +64,8 @@ class Menu_Buddy extends HTMLElement
       }
       if (open_elem)
       {
-        open_elem.style.width = this.offsetWidth + "px";
+        //open_elem.style.width = this.offsetWidth + "px";
+        open_elem.style.width = "100%";
       }
     }
 
@@ -78,8 +79,20 @@ class Menu_Buddy extends HTMLElement
 
     Render()
     {
-      const def_style =
-      `
+      this.addEventListener("click", this.On_This_Click);
+
+      this.shadowRoot.replaceChildren(this.Get_Styles());
+      this.root_div = this.Render_Menu(this.shadowRoot, this.menu_def);
+      if (this.show)
+      {
+        this.Show();
+      }
+    }
+
+    Get_Styles()
+    {
+      let elem;
+      const def_style = `
         :host
         {
           box-shadow: 3px 3px 5px 0px #0006;
@@ -152,107 +165,108 @@ class Menu_Buddy extends HTMLElement
         }
       `;
 
-      this.addEventListener("click", this.On_This_Click);
-
       if (this.style_src)
       {
         const link = document.createElement("link");
         link.rel = "stylesheet";
         link.href = this.style_src;
-        this.shadowRoot.replaceChildren(link);
+        elem = link;
       }
       else
       {
         const style = document.createElement("style");
         style.innerHTML = def_style;
-        this.shadowRoot.replaceChildren(style);
+        elem = style;
       }
 
-      this.root_div = this.Create_Menu(this.shadowRoot, this.menu_def);
-      if (this.show)
-      {
-        this.Show();
-      }
+      return elem;
     }
 
-    Create_Menu(parent, menu, is_closed, parent_div)
+    Render_Menu(parent, menu, is_closed, parent_div)
     {
       let menu_div;
 
       if (menu)
       {
         menu_div = document.createElement("div");
-        menu_div.style.width = "0px";
-        menu_div.id = menu.id;
-        menu_div.classList.add(menu.class_name);
-        menu.elem = menu_div;
         parent.append(menu_div);
+        menu_div.style.width = "0px";
+        if (menu.id) menu_div.id = menu.id;
+        menu_div.classList.add(menu.class_name);
+        menu_div.append(this.Render_Menu_Title(menu.title, menu_div, parent_div));
+        menu_div.append(...this.Render_Menu_Options(parent, menu.options, menu_div));
 
-        const close_btn = document.createElement("button");
-        close_btn.style.whiteSpace = "nowrap";
-        if (parent_div)
-        {
-          const arrow_back =
-            `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
-              <path d="M0 0h24v24H0V0z" fill="none"/>
-              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-            </svg>`;
-          close_btn.innerHTML = 
-            arrow_back +
-            "<span>" + menu.title + "</span>";
-          close_btn.addEventListener("click", event => this.On_Open_Btn_Click(event, menu_div, parent_div));
-        }
-        else
-        {
-          const close =
-            `<svg id="close_img" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
-              <path d="M0 0h24v24H0V0z" fill="none"/>
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
-            </svg>`;
-          close_btn.innerHTML = 
-            close +
-            "<span>" + menu.title + "</span>";
-          close_btn.addEventListener("click", this.Hide);
-        }
-        close_btn.classList.add("menu_title");
-        menu_div.append(close_btn);
-
-        for (const option of menu.options)
-        {
-          let option_btn;
-
-          if (option.options)
-          {
-            const arrow_forward = 
-              `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
-                <path d="M0 0h24v24H0V0z" fill="none"/>
-                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
-              </svg>`;
-            option_btn = document.createElement("button");
-            option_btn.style.whiteSpace = "nowrap";
-            option_btn.innerHTML = 
-              "<span>" + option.title + "</span>" +
-              arrow_forward;
-            const option_div = this.Create_Menu(parent, option, true, menu_div);
-            option_btn.addEventListener("click", event => this.On_Open_Btn_Click(event, menu_div, option_div));
-          }
-          else if (typeof(option.title) == "object")
-          {
-            option_btn = option.title;
-          }
-          else
-          {
-            option_btn = document.createElement("button");
-            option_btn.style.whiteSpace = "nowrap";
-            option_btn.innerText = option.title;
-            option_btn.addEventListener("click", event => this.On_Select_Btn_Click(event, option));
-          }
-          option_btn.classList.add("menu_option");
-          menu_div.append(option_btn);
-        }
+        menu.elem = menu_div;
       }
 
       return menu_div;
+    }
+
+    Render_Menu_Title(menu_title, menu_div, parent_div)
+    {
+      const close_btn = document.createElement("button");
+      close_btn.style.whiteSpace = "nowrap";
+      if (parent_div)
+      {
+        const arrow_back =
+          `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+            <path d="M0 0h24v24H0V0z" fill="none"/>
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+          </svg>`;
+        close_btn.innerHTML = arrow_back + "<span>" + menu_title + "</span>";
+        close_btn.addEventListener("click", event => this.On_Open_Btn_Click(event, menu_div, parent_div));
+      }
+      else
+      {
+        const close =
+          `<svg id="close_img" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+            <path d="M0 0h24v24H0V0z" fill="none"/>
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+          </svg>`;
+        close_btn.innerHTML = close + "<span>" + menu_title + "</span>";
+        close_btn.addEventListener("click", this.Hide);
+      }
+      close_btn.classList.add("menu_title");
+
+      return close_btn;
+    }
+
+    Render_Menu_Options(parent, options, menu_div)
+    {
+      return options.map(option => this.Render_Menu_Option(parent, option, menu_div));
+    }
+
+    Render_Menu_Option(parent, option, menu_div)
+    {
+      let option_btn;
+
+      if (option.options)
+      {
+        const arrow_forward = 
+          `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+            <path d="M0 0h24v24H0V0z" fill="none"/>
+            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
+          </svg>`;
+        option_btn = document.createElement("button");
+        option_btn.style.whiteSpace = "nowrap";
+        option_btn.innerHTML = "<span>" + option.title + "</span>" + arrow_forward;
+        const option_div = this.Render_Menu(parent, option, true, menu_div);
+        option_btn.addEventListener("click", event => this.On_Open_Btn_Click(event, menu_div, option_div));
+      }
+      else if (typeof(option.title) == "object")
+      {
+        option_btn = option.title;
+      }
+      else
+      {
+        option_btn = document.createElement("button");
+        option_btn.style.whiteSpace = "nowrap";
+        option_btn.innerText = option.title;
+        option_btn.addEventListener("click", event => this.On_Select_Btn_Click(event, option));
+      }
+      option_btn.classList.add("menu_option");
+
+      return option_btn;
     }
 
     Toggle(src_elem, pos_str)

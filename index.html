@@ -33,15 +33,22 @@
         padding: 20px;
       }
     </style>
+
     <script type="module">
       import Menu_Buddy from "./src/Menu_Buddy.mjs";
       import Menu_Buddy_Button from "./src/Menu_Buddy_Btn.mjs";
+      import Menu_Buddy_Panel from "./src/Menu_Buddy_Panel.mjs";
       customElements.define(Menu_Buddy.name, Menu_Buddy);
       customElements.define(Menu_Buddy_Button.name, Menu_Buddy_Button);
+      customElements.define(Menu_Buddy_Panel.name, Menu_Buddy_Panel);
 
       window.onload = main;
       function main()
       {
+        const nav_panel = Init_Menu("nav_panel", On_Click_Up);
+        const panel_btn = document.getElementById("panel_btn");
+        panel_btn.addEventListener("click", On_Panel_Btn_Click);
+
         const nav_menu = Init_Menu("nav_menu", On_Click_Up);
         nav_menu.addEventListener("clickoption", On_Option_Click);
 
@@ -110,6 +117,11 @@
         menu_buddy.Toggle();
       }
 
+      function On_Panel_Btn_Click(event)
+      {
+        document.getElementById("nav_panel").Toggle();
+      }
+
       function On_Click_Up(event)
       {
         const menu_buddy = document.getElementById("menu_buddy");
@@ -126,7 +138,10 @@
       }
     </script>
   </head>
+
   <body>
+    <menu-buddy-panel id="nav_panel" menu-style-src="panel.css" show="true"></menu-buddy-panel>
+
     <header>Menu Buddy Samples</header>
     <div id="main">
       <menu-buddy id="nav_menu" style-src="nav.css" show="true"></menu-buddy>
@@ -138,6 +153,9 @@
         <p>The following button is an instance of "Menu Buddy Button" which automates the task of rendering a 
           dropdown menu with relative positioning.</p>
         <menu-buddy-btn id="menu-buddy-btn" menu-style-src="menu.css" show-pos="bottom">Menu Buddy Button</menu-buddy-btn>
+
+        <p>The following button triggers rendering of a menu panel programmatically.</p>
+        <button id="panel_btn">Manual Menu Panel</button>
       </section>
     </div>
   </body>
