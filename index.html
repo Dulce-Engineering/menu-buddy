@@ -22,14 +22,12 @@
         display: flex;
         flex: 1;
         flex-direction: row;
-        xpadding-left: 20px;
         background-color: lightblue;
       }
       section
       {
         flex: 1;
         background-color: #fff;
-        xmargin-left: 20px;
         padding: 20px;
       }
     </style>
@@ -48,6 +46,7 @@
         const nav_panel = Init_Menu("nav_panel", On_Click_Up);
         const panel_btn = document.getElementById("panel_btn");
         panel_btn.addEventListener("click", On_Panel_Btn_Click);
+        nav_panel.addEventListener("clickoption", On_Option_Click);
 
         const nav_menu = Init_Menu("nav_menu", On_Click_Up);
         nav_menu.addEventListener("clickoption", On_Option_Click);
@@ -59,9 +58,6 @@
 
         const btn_menu = Init_Menu("menu-buddy-btn", On_Click_Up);
         btn_menu.addEventListener("clickoption", On_Option_Click);
-
-        window.addEventListener("click", menu_buddy.Hide);
-        window.addEventListener("click", () => btn_menu?.menu_buddy?.Hide());
       }
 
       function Init_Menu(id, On_Click_Up)

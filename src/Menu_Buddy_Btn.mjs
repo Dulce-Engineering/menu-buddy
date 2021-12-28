@@ -11,6 +11,7 @@ class Menu_Buddy_Button extends HTMLElement
 
     this.On_Menu_Btn_Click = this.On_Menu_Btn_Click.bind(this);
     this.On_Option_Click = this.On_Option_Click.bind(this);
+    this.On_Document_Click = this.On_Document_Click.bind(this);
   }
 
   connectedCallback()
@@ -37,9 +38,18 @@ class Menu_Buddy_Button extends HTMLElement
 
   set menu(value)
   {
+    this.menu_def = value;
     if (this.menu_buddy)
     {
       this.menu_buddy.menu = value;
+    }
+  }
+
+  On_Document_Click(event)
+  {
+    if (!event.path.includes(this) && !event.path.includes(this.menu_buddy))
+    {
+      this.menu_buddy.Hide();
     }
   }
 
@@ -59,6 +69,8 @@ class Menu_Buddy_Button extends HTMLElement
 
   Render()
   {
+    document.addEventListener("click", this.On_Document_Click);
+
     if (this.btn_style_src)
     {
       const link = document.createElement("link");
@@ -75,6 +87,7 @@ class Menu_Buddy_Button extends HTMLElement
     this.menu_buddy = new Menu_Buddy(); // document.createElement("menu-buddy");
     this.menu_buddy.id = "btn_menu";
     this.menu_buddy.style_src = this.menu_style_src;
+    this.menu_buddy.menu = this.menu_def;
     this.menu_buddy.addEventListener("clickoption", this.On_Option_Click);
 
     this.shadowRoot.append(this.btn, this.menu_buddy);
