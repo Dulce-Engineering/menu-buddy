@@ -5,6 +5,7 @@ class Menu_Buddy extends HTMLElement
     constructor() 
     {
       super();
+      this.can_close = true;
       this.attachShadow({mode: 'open'});
       this.On_Open_Btn_Click = this.On_Open_Btn_Click.bind(this);
       this.Toggle = this.Toggle.bind(this);
@@ -17,7 +18,7 @@ class Menu_Buddy extends HTMLElement
       this.Render();
     }
 
-    static observedAttributes = ["style-src", "show"];
+    static observedAttributes = ["style-src", "show", "can-close"];
     attributeChangedCallback(attrName, oldValue, newValue)
     {
       if (attrName == "style-src")
@@ -27,6 +28,10 @@ class Menu_Buddy extends HTMLElement
       else if (attrName == "show")
       {
         this.show = newValue;
+      }
+      else if (attrName == "can-close")
+      {
+        this.canClose = newValue;
       }
     }
 
@@ -40,6 +45,38 @@ class Menu_Buddy extends HTMLElement
     {
       this.menu_width = value;
       this.style.width = this.menu_width;
+    }
+
+    set canClose(value)
+    {
+      this.can_close = Menu_Buddy.To_Bool(value);
+    }
+
+    static To_Bool(value)
+    {
+      let res = false;
+
+      if (value)
+      {
+        if (typeof value == "string")
+        {
+          const valStr = value.trim().toLowerCase();
+          if (valStr == "true" || valStr == "yes" || valStr == "t")
+          {
+            res = true;
+          }
+        }
+        else if (typeof value == "boolean")
+        {
+          res = value;
+        }
+        else if (typeof value == "number" && value != 0)
+        {
+          res = true;
+        }
+      }
+  
+      return res;
     }
 
     // Events =====================================================================================
@@ -233,8 +270,15 @@ class Menu_Buddy extends HTMLElement
             <path d="M0 0h24v24H0V0z" fill="none"/>
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
           </svg>`;
-        close_btn.innerHTML = close + "<span>" + menu_title + "</span>";
-        close_btn.addEventListener("click", this.Hide);
+        if (this.can_close)
+        {
+          close_btn.innerHTML = close + "<span>" + menu_title + "</span>";
+          close_btn.addEventListener("click", this.Hide);  
+        }
+        else
+        {
+          close_btn.innerHTML = "<span style=\"margin-left:10px\">" + menu_title + "</span>";
+        }
       }
       close_btn.classList.add("menu_title");
 
