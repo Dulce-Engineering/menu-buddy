@@ -1,6 +1,6 @@
 class Menu_Buddy extends HTMLElement
   {
-    static name = "menu-buddy";
+    static tname = "menu-buddy";
 
     constructor() 
     {

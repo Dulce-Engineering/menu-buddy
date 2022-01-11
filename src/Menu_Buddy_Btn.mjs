@@ -2,7 +2,7 @@ import Menu_Buddy from "./Menu_Buddy.mjs";
 
 class Menu_Buddy_Button extends HTMLElement
 {
-  static name = "menu-buddy-btn";
+  static tname = "menu-buddy-btn";
 
   constructor() 
   {
