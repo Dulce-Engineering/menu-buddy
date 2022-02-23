@@ -9,6 +9,7 @@
   flex-direction: column;
   transition: width 0.25s;
   overflow: hidden;
+  width: 0;
 }
 .menu_title
 {

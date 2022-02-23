@@ -18,7 +18,7 @@ class Menu_Buddy extends HTMLElement
       this.Render();
     }
 
-    static observedAttributes = ["style-src", "show", "can-close"];
+    static observedAttributes = ["style-src", "show", "can-close", "fixed-width"];
     attributeChangedCallback(attrName, oldValue, newValue)
     {
       if (attrName == "style-src")
@@ -32,6 +32,10 @@ class Menu_Buddy extends HTMLElement
       else if (attrName == "can-close")
       {
         this.canClose = newValue;
+      }
+      else if (attrName == "fixed-width")
+      {
+        this.fixed_width = newValue;
       }
     }
 
@@ -103,12 +107,11 @@ class Menu_Buddy extends HTMLElement
     {
       if (close_elem)
       {
-        close_elem.style.width = "0px";
+        this.Close_Elem(close_elem);
       }
       if (open_elem)
       {
-        //open_elem.style.width = this.offsetWidth + "px";
-        open_elem.style.width = "100%";
+        this.Open_Elem(open_elem);
       }
     }
 
@@ -116,8 +119,26 @@ class Menu_Buddy extends HTMLElement
     {
       for (const menu_div of this.shadowRoot.children)
       {
-        menu_div.style.width = "0px";
+        this.Close_Elem(menu_div);
       }
+    }
+
+    Close_Elem(elem)
+    {
+      elem.style.width = null;
+    }
+
+    Open_Elem(elem)
+    {
+      let width = (elem.scrollWidth + 48) + "px";
+
+      if (this.fixed_width)
+      {
+        width = this.fixed_width;
+      }
+
+      elem.style.width = width;
+      console.log("Menu_Buddy.Open_Elem(): width =", width);
     }
 
     Render()
@@ -156,6 +177,7 @@ class Menu_Buddy extends HTMLElement
           transition: width 0.25s;
           overflow: hidden;
           padding: 5px 0px;
+          width: 0;
         }
         .menu_title
         {
@@ -206,10 +228,6 @@ class Menu_Buddy extends HTMLElement
         {
           align-items: center;
         }
-        #close_img
-        {
-          xwidth: 20px;
-        }
       `;
 
       if (this.style_src)
@@ -237,7 +255,6 @@ class Menu_Buddy extends HTMLElement
       {
         menu_div = document.createElement("div");
         parent.append(menu_div);
-        menu_div.style.width = "0px";
         if (menu.id) menu_div.id = menu.id;
         menu_div.classList.add(menu.class_name);
         menu_div.append(this.Render_Menu_Title(menu.title, menu_div, parent_div));

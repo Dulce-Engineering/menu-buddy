@@ -2,9 +2,8 @@
 {
   box-shadow: 3px 3px 5px 0px #0006;
   background-color: #ddd;
-  width: 150px;
   display: none;
-  position: absolute;
+  position: fixed;
 }
 .menu 
 {
@@ -13,6 +12,7 @@
   transition: width 0.25s;
   overflow: hidden;
   padding: 5px 0px;
+  width: 0;
 }
 .menu_title
 {

@@ -45,17 +45,18 @@ class Menu_Buddy_Panel extends HTMLElement
   
   Show()
   {
+    this.menu_buddy.style.width = "200px";
     this.menu_buddy.Close_All();
     this.menu_buddy.Open(this.menu_buddy.root_div, null);
 
-    this.menu_buddy.style.width = "200px";
     this.screen.style.zIndex = this.z_index_show;
     this.screen.style.backgroundColor = "#0008";
   }
 
   Hide()
   {
-    this.menu_buddy.style.width = "0px";
+    this.menu_buddy.style.width = null;
+    this.menu_buddy.Close_All();
     this.screen.style.backgroundColor = "#0000";
     setTimeout(() => this.screen.style.zIndex = this.z_index_hide, this.timeout_hide);
   }
@@ -89,6 +90,7 @@ class Menu_Buddy_Panel extends HTMLElement
   Render()
   {
     this.menu_buddy = new Menu_Buddy();
+    this.menu_buddy.fixed_width = "200px";
     this.menu_buddy.Show = this.Show;
     this.menu_buddy.Hide = this.Hide;
     this.menu_buddy.id = "menu_buddy";
