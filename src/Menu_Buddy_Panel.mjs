@@ -22,18 +22,14 @@ class Menu_Buddy_Panel extends HTMLElement
     this.Render();
   }
 
-  static observedAttributes = ["menu-style-src", "show-pos"];
+  /*static observedAttributes = ["menu-style-src", "show-pos"];
   attributeChangedCallback(attrName, oldValue, newValue)
   {
     if (attrName == "menu-style-src")
     {
       this.menu_style_src = newValue;
     }
-    if (attrName == "show-pos")
-    {
-      this.show_pos = newValue;
-    }
-  }
+  }*/
 
   set menu(value)
   {
@@ -43,9 +39,14 @@ class Menu_Buddy_Panel extends HTMLElement
     }
   }
   
+  get fixed_width()
+  {
+    return this.hasAttribute("fixed-width") ? this.getAttribute("fixed-width") : "200px";
+  }
+
   Show()
   {
-    this.menu_buddy.style.width = "200px";
+    this.menu_buddy.style.width = this.fixed_width;
     this.menu_buddy.Close_All();
     this.menu_buddy.Open(this.menu_buddy.root_div, null);
 
@@ -90,11 +91,11 @@ class Menu_Buddy_Panel extends HTMLElement
   Render()
   {
     this.menu_buddy = new Menu_Buddy();
-    this.menu_buddy.fixed_width = "200px";
+    this.menu_buddy.fixed_width = this.fixed_width;
     this.menu_buddy.Show = this.Show;
     this.menu_buddy.Hide = this.Hide;
     this.menu_buddy.id = "menu_buddy";
-    this.menu_buddy.style_src = this.menu_style_src;
+    this.menu_buddy.style_src = this.getAttribute("menu-style-src");
     this.menu_buddy.addEventListener("clickoption", this.On_Option_Click);
 
     this.screen = this.Render_Screen();

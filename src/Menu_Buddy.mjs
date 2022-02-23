@@ -138,7 +138,6 @@ class Menu_Buddy extends HTMLElement
       }
 
       elem.style.width = width;
-      console.log("Menu_Buddy.Open_Elem(): width =", width);
     }
 
     Render()
