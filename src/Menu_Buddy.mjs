@@ -117,20 +117,21 @@ class Menu_Buddy extends HTMLElement
 
     Close_All()
     {
-      for (const menu_div of this.shadowRoot.children)
+      for (const elem of this.shadowRoot.children)
       {
-        this.Close_Elem(menu_div);
+        if (elem.tagName != "style")
+          this.Close_Elem(elem);
       }
     }
 
     Close_Elem(elem)
     {
-      elem.style.width = null;
+      elem.style.width = "0px";
     }
 
     Open_Elem(elem)
     {
-      let width = (elem.scrollWidth + 48) + "px";
+      let width = elem.scrollWidth + "px";
 
       if (this.fixed_width)
       {
@@ -171,61 +172,75 @@ class Menu_Buddy extends HTMLElement
         }
         .menu 
         {
-          display: inline-flex;
-          flex-direction: column;
-          transition: width 0.25s;
+          display: inline-block;
+          vertical-align: top;
           overflow: hidden;
-          padding: 5px 0px;
-          width: 0;
+          transition: width 0.25s;
+          box-sizing: border-box;
+          background-color: #ddd;
+          padding: 0;
+          margin: 0;
+          border: none;
         }
+
         .menu_title
         {
-          border: none;
-          padding: 5px 10px 5px 10px;
+          display: block;
+          width: 100%;
           text-align: left;
-          cursor: pointer;
+          padding: 0;
+          border: none;
+          margin: 0;
           background-color: transparent;
+          cursor: pointer;
           height: 30px;
-          display: flex;
-          align-items: center;
           font-weight: bold;
+          white-space: nowrap;
+        }
+        .menu_title span
+        {
+          line-height: 30px;
         }
         .menu_title svg
         {
-          margin-right: 6px;
+          vertical-align: middle;
+          margin: 0px 5px 0px 5px;
         }
         .menu_title:hover
         {
           background-color: #ccc;
         }
-        .menu_title_prev
-        {
-          margin-right: 5px;
-          transform: rotateZ(270deg);
-          display: inline-block;
-          vertical-align: bottom;
-          width: 10px;
-        }
+
         .menu_option
         {
-          border: none;
-          padding: 5px 10px 5px 40px;
+          display: block;
+          width: 100%;
           text-align: left;
-          cursor: pointer;
+          padding: 0;
+          border: none;
+          margin: 0;
           background-color: transparent;
+          cursor: pointer;
           height: 30px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          box-sizing: border-box;
+          white-space: nowrap;
+        }
+        .menu_option span
+        {
+          padding-left: 30px;
+          line-height: 30px;
+        }
+        .menu_option svg
+        {
+          vertical-align: middle;
+          margin: 0px 10px 0px 5px;
         }
         .menu_option:hover
         {
           background-color: #ccc;
         }
-        .custom_option
+        .title_only
         {
-          align-items: center;
+          padding-right: 20px;
         }
       `;
 
@@ -267,8 +282,7 @@ class Menu_Buddy extends HTMLElement
 
     Render_Menu_Title(menu_title, menu_div, parent_div)
     {
-      const close_btn = document.createElement("button");
-      close_btn.style.whiteSpace = "nowrap";
+      const close_btn = document.createElement("div");
       if (parent_div)
       {
         const arrow_back =
@@ -276,7 +290,7 @@ class Menu_Buddy extends HTMLElement
             <path d="M0 0h24v24H0V0z" fill="none"/>
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
           </svg>`;
-        close_btn.innerHTML = arrow_back + "<span>" + menu_title + "</span>";
+        close_btn.innerHTML = arrow_back + "<span class='title_only'>" + menu_title + "</span>";
         close_btn.addEventListener("click", event => this.On_Open_Btn_Click(event, menu_div, parent_div));
       }
       else
@@ -288,7 +302,7 @@ class Menu_Buddy extends HTMLElement
           </svg>`;
         if (this.can_close)
         {
-          close_btn.innerHTML = close + "<span>" + menu_title + "</span>";
+          close_btn.innerHTML = close + "<span class='title_only'>" + menu_title + "</span>";
           close_btn.addEventListener("click", this.Hide);  
         }
         else
@@ -317,8 +331,7 @@ class Menu_Buddy extends HTMLElement
             <path d="M0 0h24v24H0V0z" fill="none"/>
             <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
           </svg>`;
-        option_btn = document.createElement("button");
-        option_btn.style.whiteSpace = "nowrap";
+        option_btn = document.createElement("div");
         option_btn.innerHTML = "<span>" + option.title + "</span>" + arrow_forward;
         const option_div = this.Render_Menu(parent, option, true, menu_div);
         option_btn.addEventListener("click", event => this.On_Open_Btn_Click(event, menu_div, option_div));
@@ -329,9 +342,8 @@ class Menu_Buddy extends HTMLElement
       }
       else
       {
-        option_btn = document.createElement("button");
-        option_btn.style.whiteSpace = "nowrap";
-        option_btn.innerText = option.title;
+        option_btn = document.createElement("div");
+        option_btn.innerHTML = "<span class='title_only'>" + option.title + "</span>";
         option_btn.addEventListener("click", event => this.On_Select_Btn_Click(event, option));
       }
       option_btn.classList.add("menu_option");

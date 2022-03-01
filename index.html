@@ -64,7 +64,11 @@
       {
         const elem = document.createElement("span");
         elem.classList.add("custom_option");
-        elem.innerHTML = "Earth <button id='up'>up</button><button>down</button>";
+        elem.innerHTML = `
+            <span>Earth</span> 
+            <button id='up'>up</button>
+            <button>down</button>
+        `;
         elem.querySelector("#up").addEventListener("click", On_Click_Up);
 
         const m =
@@ -142,9 +146,9 @@
     <div id="main">
       <menu-buddy id="nav_menu" style-src="nav.css" show="true" can-close="false" fixed-width="200px"></menu-buddy>
       <section>
-        <p>The following button triggers rendering of a menu programmatically.</p>
+        <p>The following button triggers rendering of a menu programmatically with defult styling.</p>
         <button id="menu_btn">Manual Menu</button>
-        <menu-buddy id="menu_buddy" style-src="menu.css"></menu-buddy>
+        <menu-buddy id="menu_buddy"></menu-buddy>
 
         <p>The following button is an instance of "Menu Buddy Button" which automates the task of rendering a 
           dropdown menu with relative positioning.</p>
