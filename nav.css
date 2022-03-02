@@ -1,7 +1,6 @@
 :host
 {
   width: 200px;
-  box-sizing: border-box;
 }
 .menu 
 {
@@ -9,43 +8,36 @@
   flex-direction: column;
   transition: width 0.25s;
   overflow: hidden;
-  width: 0;
 }
+
 .menu_title
 {
   border: none;
-  padding: 5px 10px;
+  padding: 0px 10px;
   text-align: left;
   cursor: pointer;
   background-color: transparent;
   display: flex;
   align-items: center;
-  height: 34px;
+  height: 30px;
   column-gap: 5px;
 }
 .menu_title:hover
 {
   background-color: #d2e9f1;
 }
-.menu_title_prev
-{
-  margin-right: 5px;
-  transform: rotateZ(270deg);
-  display: inline-block;
-  vertical-align: bottom;
-  width: 10px;
-}
+
 .menu_option
 {
   border: none;
-  padding: 5px 10px 5px 40px;
+  padding: 0px 10px 0px 40px;
   text-align: left;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   background-color: transparent;
   align-items: center;
-  height: 34px;
+  height: 30px;
 }
 .menu_option:hover
 {

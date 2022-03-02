@@ -6,7 +6,19 @@ class Menu_Buddy extends HTMLElement
     {
       super();
       this.can_close = true;
+      this.arrow_back_svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+          <path d="M0 0h24v24H0V0z" fill="none"/>
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>`;
+      this.close_svg =
+        `<svg id="close_img" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+          <path d="M0 0h24v24H0V0z" fill="none"/>
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+        </svg>`;
+
       this.attachShadow({mode: 'open'});
+
       this.On_Open_Btn_Click = this.On_Open_Btn_Click.bind(this);
       this.Toggle = this.Toggle.bind(this);
       this.Hide = this.Hide.bind(this);
@@ -282,34 +294,21 @@ class Menu_Buddy extends HTMLElement
 
     Render_Menu_Title(menu_title, menu_div, parent_div)
     {
+      let svg = "";
       const close_btn = document.createElement("div");
+
       if (parent_div)
       {
-        const arrow_back =
-          `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
-            <path d="M0 0h24v24H0V0z" fill="none"/>
-            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-          </svg>`;
-        close_btn.innerHTML = arrow_back + "<span class='title_only'>" + menu_title + "</span>";
+        svg = this.arrow_back_svg;
         close_btn.addEventListener("click", event => this.On_Open_Btn_Click(event, menu_div, parent_div));
       }
-      else
+      else if (this.can_close)
       {
-        const close =
-          `<svg id="close_img" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
-            <path d="M0 0h24v24H0V0z" fill="none"/>
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
-          </svg>`;
-        if (this.can_close)
-        {
-          close_btn.innerHTML = close + "<span class='title_only'>" + menu_title + "</span>";
-          close_btn.addEventListener("click", this.Hide);  
-        }
-        else
-        {
-          close_btn.innerHTML = "<span style=\"margin-left:10px\">" + menu_title + "</span>";
-        }
+        svg = this.close_svg;
+        close_btn.addEventListener("click", this.Hide);  
       }
+
+      close_btn.innerHTML = svg + "<span class='title_only'>" + menu_title + "</span>";
       close_btn.classList.add("menu_title");
 
       return close_btn;
