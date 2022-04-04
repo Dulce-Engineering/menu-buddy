@@ -88,8 +88,21 @@ class Menu_Buddy_Panel extends HTMLElement
     this.dispatchEvent(new_event);
   }
 
+  Add_Stylesheet(attrib_name = "style-src")
+  {
+    if (this.hasAttribute(attrib_name))
+    {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = this.getAttribute(attrib_name);
+      this.shadowRoot.append(link);
+    }
+  }
+
   Render()
   {
+    this.Add_Stylesheet();
+
     this.menu_buddy = new Menu_Buddy();
     this.menu_buddy.fixed_width = this.fixed_width;
     this.menu_buddy.Show = this.Show;
@@ -105,8 +118,9 @@ class Menu_Buddy_Panel extends HTMLElement
   Render_Screen()
   {
     const screen = document.createElement("div");
+    screen.classList.add("menu_screen");
     screen.style.transition = "background-color 0.5s";
-    screen.style.position = "absolute";
+    screen.style.position = "fixed";
     screen.style.left = "0px";
     screen.style.top = "0px";
     screen.style.width = "100%";
