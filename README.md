@@ -57,8 +57,6 @@ Optional url string indicating which styles file to use for the button.
 Optional url string indicating which styles file to use for the menus.
 - **show-pos**  
 Optional string indicating position of menu relative to button. Can be "top", "bottom", "left", or "right".
-- **fixed-width**
-Optional string indicating the width that should be maintained as a user moves through menu options.
 
 ## Fields
 - **menu**  
@@ -69,8 +67,6 @@ Optional url string indicating which styles file to use
 Optional string indicating position of menu relative to button. Can be "top", "bottom", "left", or "right".
 - **menu_buddy**  
 Accessible instance of Menu Buddy.
-- **fixed_width**
-Optional string indicating the width that should be maintained as a user moves through menu options.
 
 ## Events
 - **clickoption**  

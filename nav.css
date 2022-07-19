@@ -8,6 +8,11 @@
   flex-direction: column;
   transition: width 0.25s;
   overflow: hidden;
+  width: 0;
+}
+.menu_open
+{
+  width: 200px;
 }
 
 .menu_title
@@ -35,8 +40,8 @@
   cursor: pointer;
   display: flex;
   justify-content: space-between;
+  align-items: center;  
   background-color: transparent;
-  align-items: center;
   height: 30px;
 }
 .menu_option:hover

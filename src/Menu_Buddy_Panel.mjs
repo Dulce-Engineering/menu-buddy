@@ -38,15 +38,9 @@ class Menu_Buddy_Panel extends HTMLElement
       this.menu_buddy.menu = value;
     }
   }
-  
-  get fixed_width()
-  {
-    return this.hasAttribute("fixed-width") ? this.getAttribute("fixed-width") : "200px";
-  }
 
   Show()
   {
-    this.menu_buddy.style.width = this.fixed_width;
     this.menu_buddy.Close_All();
     this.menu_buddy.Open(this.menu_buddy.root_div, null);
 
@@ -104,7 +98,6 @@ class Menu_Buddy_Panel extends HTMLElement
     this.Add_Stylesheet();
 
     this.menu_buddy = new Menu_Buddy();
-    this.menu_buddy.fixed_width = this.fixed_width;
     this.menu_buddy.Show = this.Show;
     this.menu_buddy.Hide = this.Hide;
     this.menu_buddy.id = "menu_buddy";

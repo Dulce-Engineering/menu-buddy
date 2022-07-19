@@ -30,7 +30,7 @@ class Menu_Buddy extends HTMLElement
       this.Render();
     }
 
-    static observedAttributes = ["style-src", "show", "can-close", "fixed-width"];
+    static observedAttributes = ["style-src", "show", "can-close"];
     attributeChangedCallback(attrName, oldValue, newValue)
     {
       if (attrName == "style-src")
@@ -44,10 +44,6 @@ class Menu_Buddy extends HTMLElement
       else if (attrName == "can-close")
       {
         this.canClose = newValue;
-      }
-      else if (attrName == "fixed-width")
-      {
-        this.fixed_width = newValue;
       }
     }
 
@@ -138,19 +134,12 @@ class Menu_Buddy extends HTMLElement
 
     Close_Elem(elem)
     {
-      elem.style.width = "0px";
+      elem.classList.remove("menu_open");
     }
 
     Open_Elem(elem)
     {
-      let width = elem.scrollWidth + "px";
-
-      if (this.fixed_width)
-      {
-        width = this.fixed_width;
-      }
-
-      elem.style.width = width;
+      elem.classList.add("menu_open");
     }
 
     Render()
@@ -193,8 +182,13 @@ class Menu_Buddy extends HTMLElement
           padding: 0;
           margin: 0;
           border: none;
+          width: 0;
         }
 
+        .menu_open
+        {
+          width: 200px;
+        }
         .menu_title
         {
           display: block;
@@ -225,7 +219,7 @@ class Menu_Buddy extends HTMLElement
 
         .menu_option
         {
-          display: block;
+          display: flex;
           width: 100%;
           text-align: left;
           padding: 0;
@@ -235,6 +229,8 @@ class Menu_Buddy extends HTMLElement
           cursor: pointer;
           height: 30px;
           white-space: nowrap;
+          justify-content: space-between;
+          align-items: center;  
         }
         .menu_option span
         {

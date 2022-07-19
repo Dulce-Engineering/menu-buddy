@@ -17,6 +17,10 @@
   padding: 5px 0px;
   width: 0;
 }
+.menu_open
+{
+  width: 200px;
+}
 .menu_title
 {
   border: none;
