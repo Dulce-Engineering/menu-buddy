@@ -19,7 +19,7 @@ class Menu_Buddy_Panel extends HTMLElement
 
   connectedCallback()
   {
-    this.Render();
+    //this.Render();
   }
 
   /*static observedAttributes = ["menu-style-src", "show-pos"];
@@ -33,10 +33,9 @@ class Menu_Buddy_Panel extends HTMLElement
 
   set menu(value)
   {
-    if (this.menu_buddy)
-    {
-      this.menu_buddy.menu = value;
-    }
+    console.log("Menu_Buddy_Panel.set menu()");
+    this.Render();
+    this.menu_buddy.menu = value;
   }
 
   Show()
@@ -105,7 +104,7 @@ class Menu_Buddy_Panel extends HTMLElement
     this.menu_buddy.addEventListener("clickoption", this.On_Option_Click);
 
     this.screen = this.Render_Screen();
-    this.shadowRoot.append(this.screen, this.menu_buddy);
+    this.shadowRoot.replaceChildren(this.screen, this.menu_buddy);
   }
 
   Render_Screen()
