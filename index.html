@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" type="text/css" href="/src/MB_Select.css" media="screen" />
     <style>
       body
       {
@@ -34,9 +35,11 @@
 
     <script type="module">
       import Menu_Buddy from "./src/Menu_Buddy.mjs";
+      import MB_Select from "./src/MB_Select.mjs";
       import Menu_Buddy_Button from "./src/Menu_Buddy_Btn.mjs";
       import Menu_Buddy_Panel from "./src/Menu_Buddy_Panel.mjs";
       customElements.define(Menu_Buddy.tname, Menu_Buddy);
+      customElements.define(MB_Select.tname, MB_Select);
       customElements.define(Menu_Buddy_Button.tname, Menu_Buddy_Button);
       customElements.define(Menu_Buddy_Panel.tname, Menu_Buddy_Panel);
 
@@ -58,6 +61,75 @@
 
         const btn_menu = Init_Menu("menu-buddy-btn", On_Click_Up);
         btn_menu.addEventListener("clickoption", On_Option_Click);
+
+        const menu_options =
+        {
+          id: 1,
+          title: "world",
+          options:
+          [
+            {
+              id: 11,
+              title: "america",
+              options:
+              [
+                {
+                  id: 111,
+                  title: "north america",
+                  options:
+                  [
+                    {
+                      id: 1111,
+                      title: "canada"
+                    },
+                    {
+                      id: 1112,
+                      title: "usa"
+                    }
+                  ]
+                },
+                {
+                  id: 112,
+                  title: "central america"
+                },
+                {
+                  id: 113,
+                  title: "south america",
+                  options:
+                  [
+                    {
+                      id: 1131,
+                      title: "argentina"
+                    },
+                    {
+                      id: 1132,
+                      title: "brazil"
+                    },
+                    {
+                      id: 1133,
+                      title: "chile"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              id: 12,
+              title: "asia"
+            }
+          ]
+        };
+        const mb_select = document.getElementById("mb_select");
+        mb_select.Get_Id = o => o.id;
+        mb_select.Get_Label = o => o.title;
+        mb_select.Has_Children = o => Wait(500, o.options != undefined && o.options != null);
+        mb_select.Get_Children = o => Wait(500, o.options);
+        mb_select.Get_Root = () => Wait(500, menu_options);
+      }
+
+      function Wait(millis, res) 
+      {
+        return new Promise(r => {setTimeout(() => {r(res)}, millis)});
       }
 
       function Init_Menu(id, On_Click_Up)
@@ -156,6 +228,9 @@
 
         <p>The following button triggers rendering of a menu panel programmatically.</p>
         <button id="panel_btn">Manual Menu Panel</button>
+
+        <p>The following button triggers rendering of a dynamic select button.</p>
+        <mb-select id="mb_select"></mb-select>
       </section>
     </div>
   </body>

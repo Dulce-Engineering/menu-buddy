@@ -296,7 +296,8 @@ class Menu_Buddy extends HTMLElement
       if (parent_div)
       {
         svg = this.arrow_back_svg;
-        close_btn.addEventListener("click", event => this.On_Open_Btn_Click(event, menu_div, parent_div));
+        close_btn.addEventListener
+          ("click", event => this.On_Open_Btn_Click(event, menu_div, parent_div));
       }
       else if (this.can_close)
       {
@@ -329,7 +330,8 @@ class Menu_Buddy extends HTMLElement
         option_btn = document.createElement("div");
         option_btn.innerHTML = "<span>" + option.title + "</span>" + arrow_forward;
         const option_div = this.Render_Menu(parent, option, true, menu_div);
-        option_btn.addEventListener("click", event => this.On_Open_Btn_Click(event, menu_div, option_div));
+        option_btn.addEventListener
+          ("click", event => this.On_Open_Btn_Click(event, menu_div, option_div));
       }
       else if (typeof(option.title) == "object")
       {
