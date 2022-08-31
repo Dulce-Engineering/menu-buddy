@@ -63,68 +63,75 @@
         btn_menu.addEventListener("clickoption", On_Option_Click);
 
         const menu_options =
-        {
-          id: 1,
-          title: "world",
-          options:
-          [
-            {
-              id: 11,
-              title: "america",
-              options:
-              [
-                {
-                  id: 111,
-                  title: "north america",
-                  options:
-                  [
-                    {
-                      id: 1111,
-                      title: "canada"
-                    },
-                    {
-                      id: 1112,
-                      title: "usa"
-                    }
-                  ]
-                },
-                {
-                  id: 112,
-                  title: "central america"
-                },
-                {
-                  id: 113,
-                  title: "south america",
-                  options:
-                  [
-                    {
-                      id: 1131,
-                      title: "argentina"
-                    },
-                    {
-                      id: 1132,
-                      title: "brazil"
-                    },
-                    {
-                      id: 1133,
-                      title: "chile"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              id: 12,
-              title: "asia"
-            }
-          ]
-        };
+        [
+          {
+            id: 1,
+            title: "earth",
+            parent_id: null
+          },
+          {
+            id: 2,
+            title: "moon",
+            parent_id: null
+          },
+          {
+            id: 11,
+            title: "america",
+            parent_id: 1
+          },
+          {
+            id: 111,
+            title: "north america",
+            parent_id: 11,
+          },
+          {
+            id: 1111,
+            title: "canada",
+            parent_id: 111,
+          },
+          {
+            id: 1112,
+            title: "usa",
+            parent_id: 111,
+          },
+          {
+            id: 112,
+            title: "central america",
+            parent_id: 11
+          },
+          {
+            id: 113,
+            title: "south america",
+            parent_id: 11
+          },
+          {
+            id: 1131,
+            title: "argentina",
+            parent_id: 113,
+          },
+          {
+            id: 1132,
+            title: "brazil",
+            parent_id: 113
+          },
+          {
+            id: 1133,
+            title: "chile",
+            parent_id: 113
+          },
+          {
+            id: 12,
+            title: "asia",
+            parent_id: 1
+          }
+        ];
         const mb_select = document.getElementById("mb_select");
-        mb_select.Get_Id = o => o.id;
-        mb_select.Get_Label = o => o.title;
-        mb_select.Has_Children = o => Wait(500, o.options != undefined && o.options != null);
-        mb_select.Get_Children = o => Wait(500, o.options);
-        mb_select.Get_Root = () => Wait(500, menu_options);
+        mb_select.Get_Label = 
+          id => menu_options.find(o => o.id == id)?.title;
+        mb_select.Has_Children = 
+          id => menu_options.some(o => o.parent_id == id);
+        mb_select.Get_Children = 
+          id => menu_options.filter(o => o.parent_id == id).map(o => o.id);
       }
 
       function Wait(millis, res) 

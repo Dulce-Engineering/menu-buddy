@@ -18,7 +18,7 @@ mb-select button:hover
 {
   background-color: #ddd;
 }
-.mb_menu
+mb-select .mb_menu
 {
   display: inline-block;
   border: 1px solid #000;
@@ -33,64 +33,64 @@ mb-select button:hover
   margin: 0;
   box-shadow: 0px 5px 10px 2px #aaa;
 }
-.mb_menu_title
+mb-select .mb_menu_title
 {
   white-space: nowrap;
   padding: 0 10px 0 0;
 }
-.mb_menu_option
+mb-select .mb_menu_option
 {
   white-space: nowrap;
   display: flex;
   justify-content: space-between;
 }
-.mb_menu_show
+mb-select .mb_menu_show
 {
   opacity: 1;
   pointer-events: auto;
 }
-.mb_menu_hide
+mb-select .mb_menu_hide
 {
   opacity: 0;
   pointer-events: none;
 }
-.mb_sel_btn
+mb-select .mb_sel_btn
 {
   padding: 5px 5px 5px 10px;
 }
-.mb_sel_btn::after
+mb-select .mb_sel_btn::after
 {
   content: " 🞃";
 }
-.mb_clr_btn
+mb-select .mb_clr_btn
 {
   padding: 5px;
 }
-.mb_clr_btn::after
+mb-select .mb_clr_btn::after
 {
   content: "⌧";
 }
-.mb_close_btn
+mb-select .mb_close_btn
 {
   padding: 5px 5px 5px 10px;
 }
-.mb_close_btn::after
+mb-select .mb_close_btn::after
 {
   content: "🗙";
 }
-.mb_back_btn
+mb-select .mb_back_btn
 {
   padding: 5px 5px 5px 10px;
 }
-.mb_back_btn::after
+mb-select .mb_back_btn::after
 {
   content: "🞀";
 }
-.mb_next_btn::after
+mb-select .mb_next_btn::after
 {
   content: "🞂";
 }
-.mb_option_btn
+mb-select .mb_option_btn
 {
   padding: 5px 5px 5px 10px;
   flex-grow: 1;

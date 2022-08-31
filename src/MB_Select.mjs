@@ -15,33 +15,12 @@ class MB_Select extends HTMLElement
 
     this.path = "";
     this.menus = [];
-    this.label = "None";
-    this.value = null;
+    this.obj_id = null;
   }
 
   connectedCallback()
   {
     this.Render();
-  }
-
-  Get_Root()
-  {
-  }
-
-  Get_Id(option)
-  {
-  }
-
-  Get_Label(option)
-  {
-  }
-
-  Has_Children(option)
-  {
-  }
-
-  Get_Children(option)
-  {
   }
 
   Append_Menu(menu_elem)
@@ -75,22 +54,48 @@ class MB_Select extends HTMLElement
     this.clear_btn.disabled = false;
   }
 
-  Get_Path()
+  async Get_Path()
   {
     let res = "";
 
     for (const menu of this.menus)
     {
-      res = Append_Str(res, this.Get_Label(menu.option), " / ");
+      const label = await this.Get_Label(menu.option_id);
+      res = Append_Str(res, label, " / ");
     }
 
     return res;
+  }
+
+  set value(id)
+  {
+    this.Update_Select_Text(id);
+  }
+
+  get value()
+  {
+    return this.obj_id;
+  }
+
+  // Overides ===================================================================================
+
+  Get_Label(id)
+  {
+  }
+
+  Has_Children(id)
+  {
+  }
+
+  Get_Children(id)
+  {
   }
 
   // Events =====================================================================================
 
   On_Click_Back(event, menu_elem, parent_menu_elem)
   {
+    event.preventDefault();
     menu_elem.addEventListener("transitionend", () => this.Remove_Menu(menu_elem));
     this.Hide(menu_elem);
 
@@ -99,15 +104,16 @@ class MB_Select extends HTMLElement
 
   On_Click_Close(event, menu_elem)
   {
+    event.preventDefault();
     menu_elem.addEventListener("transitionend", () => this.Close());
     this.Hide(menu_elem);
   }
 
-  async On_Click_Next(event, option, parent_menu_elem)
+  async On_Click_Next(event, id, parent_menu_elem)
   {
-    event.stopPropagation();
+    event.preventDefault();
 
-    const menu_elem = await this.Render_Menu(option, parent_menu_elem);
+    const menu_elem = await this.Render_Menu(id, parent_menu_elem);
     this.Append_Menu(menu_elem);
     requestAnimationFrame(() => this.Show(menu_elem));
 
@@ -116,21 +122,19 @@ class MB_Select extends HTMLElement
 
   async On_Click_Open()
   {
+    event.preventDefault();
     this.select_btn.disabled = true;
     this.clear_btn.disabled = true;
 
-    const root_option = await this.Get_Root();
-    const menu_elem = await this.Render_Menu(root_option);
+    const menu_elem = await this.Render_Menu(null);
     this.Append_Menu(menu_elem);
     requestAnimationFrame(() => this.Show(menu_elem));
   }
 
-  On_Click_Option(event, option, menu_elem)
+  async On_Click_Option(event, id, menu_elem)
   {
-    this.value = this.Get_Id(option);
-    this.label = Append_Str(this.Get_Path(), this.Get_Label(option), " / ");
-
-    this.select_btn.innerText = this.label;
+    event.preventDefault();
+    this.Update_Select_Text(id);
 
     menu_elem.addEventListener("transitionend", () => this.Close());
     this.Hide(menu_elem);
@@ -138,19 +142,37 @@ class MB_Select extends HTMLElement
 
   On_Click_Clear()
   {
-    this.value = null;
-    this.label = "None";
-
-    this.select_btn.innerText = "None";
+    event.preventDefault();
+    this.Update_Select_Text(null);
   }
 
   // Rendering ==================================================================================
+
+  async Update_Select_Text(id)
+  {
+    let label = this.getAttribute("def-label") || "None";
+
+    if (id)
+    {
+      this.obj_id = id;
+      label = await this.Get_Label(id);
+      const path = await this.Get_Path();
+      label = Append_Str(path, label, " / ");
+    }
+    else
+    {
+      this.obj_id = null;
+  }
+
+    this.select_btn.innerText = label;
+  }
 
   Render()
   {
     this.select_btn = this.Render_Select();
     this.select_btn.addEventListener("click", this.On_Click_Open);
     this.append(this.select_btn);
+    this.Update_Select_Text(null);
 
     this.clear_btn = this.Render_Clear();
     this.clear_btn.addEventListener("click", this.On_Click_Clear);
@@ -161,7 +183,6 @@ class MB_Select extends HTMLElement
   {
     const elem = document.createElement("button");
     elem.classList.add("mb_sel_btn");
-    elem.innerText = this.label;
 
     return elem;
   }
@@ -174,20 +195,20 @@ class MB_Select extends HTMLElement
     return elem;
   }
 
-  async Render_Menu(option, parent_menu_elem)
+  async Render_Menu(id, parent_menu_elem)
   {
     const menu_elem = document.createElement("div");
     menu_elem.classList.add("mb_menu");
-    menu_elem.option = option;
+    menu_elem.option_id = id;
 
-    const title_elem = this.Render_Title(option, parent_menu_elem, menu_elem);
+    const title_elem = await this.Render_Title(id, parent_menu_elem, menu_elem);
     menu_elem.append(title_elem);
 
-    if (await this.Has_Children(option))
+    if (await this.Has_Children(id))
     {
-      const child_options = await this.Get_Children(option);
+      const child_ids = await this.Get_Children(id);
       const child_elems_p = 
-        child_options.map(option => this.Render_Option(option, menu_elem));
+        child_ids.map(id => this.Render_Option(id, menu_elem));
       const child_elems = await Promise.all(child_elems_p);
       menu_elem.append(...child_elems);
     }
@@ -195,10 +216,10 @@ class MB_Select extends HTMLElement
     return menu_elem;
   }
 
-  Render_Title(option, parent_menu_elem, menu_elem)
+  async Render_Title(id, parent_menu_elem, menu_elem)
   {
     const elem = document.createElement("div");
-    elem.innerText = this.Get_Label(option);
+    elem.innerText = await this.Get_Label(id) || this.getAttribute("root-title") || "Items";
     elem.classList.add("mb_menu_title");
 
     if (!parent_menu_elem)
@@ -221,23 +242,23 @@ class MB_Select extends HTMLElement
     return elem;
   }
 
-  async Render_Option(option, parent_menu_elem)
+  async Render_Option(id, parent_menu_elem)
   {
     const option_elem = document.createElement("div");
     option_elem.classList.add("mb_menu_option");
 
     const select_elem = document.createElement("button");
     select_elem.classList.add("mb_option_btn");
-    select_elem.innerText = this.Get_Label(option);
-    select_elem.addEventListener("click", e => this.On_Click_Option(e, option, parent_menu_elem));
+    select_elem.innerText = await this.Get_Label(id);
+    select_elem.addEventListener("click", e => this.On_Click_Option(e, id, parent_menu_elem));
     option_elem.append(select_elem);
 
-    if (await this.Has_Children(option))
+    if (await this.Has_Children(id))
     {
       const next_elem = document.createElement("button");
       next_elem.classList.add("mb_next_btn");
       next_elem.addEventListener
-        ("click", e => this.On_Click_Next(e, option, parent_menu_elem));
+        ("click", e => this.On_Click_Next(e, id, parent_menu_elem));
       option_elem.append(next_elem);
     }
 
