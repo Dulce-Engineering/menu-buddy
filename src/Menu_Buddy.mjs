@@ -1,3 +1,5 @@
+import Utils from "./Utils.js";
+
 class Menu_Buddy extends HTMLElement
   {
     static tname = "menu-buddy";
@@ -30,18 +32,10 @@ class Menu_Buddy extends HTMLElement
       this.Render();
     }
 
-    static observedAttributes = ["style-src", "show", "can-close"];
+  static observedAttributes = ["can-close"];
     attributeChangedCallback(attrName, oldValue, newValue)
     {
-      if (attrName == "style-src")
-      {
-        this.style_src = newValue;
-      }
-      else if (attrName == "show")
-      {
-        this.show = newValue;
-      }
-      else if (attrName == "can-close")
+    if (attrName == "can-close")
       {
         this.canClose = newValue;
       }
@@ -151,9 +145,10 @@ class Menu_Buddy extends HTMLElement
         this.style.width = this.menu_width;
       }
 
-      this.shadowRoot.replaceChildren(this.Get_Styles());
+    const styles = this.Get_Styles();
+    this.shadowRoot.replaceChildren(styles);
       this.root_div = this.Render_Menu(this.shadowRoot, this.menu_def);
-      if (this.show)
+    if (this.hasAttribute("show"))
       {
         this.Show();
       }
@@ -252,11 +247,11 @@ class Menu_Buddy extends HTMLElement
         }
       `;
 
-      if (this.style_src)
+    if (this.hasAttribute("style-src"))
       {
         const link = document.createElement("link");
         link.rel = "stylesheet";
-        link.href = this.style_src;
+      link.href = this.getAttribute("style-src");
         elem = link;
       }
       else
@@ -387,27 +382,33 @@ class Menu_Buddy extends HTMLElement
         const src_rect = src_elem.getBoundingClientRect();
         if (pos_str == "top")
         {
-          x = src_rect.left;
-          y = src_rect.top - this_rect.height;
+        //x = src_rect.left;
+        //y = src_rect.top - this_rect.height;
+        //this.style.left = x + "px";
+        //this.style.top = y + "px";
         }
         if (pos_str == "bottom")
         {
-          x = src_rect.left;
-          y = src_rect.bottom;
+        //x = src_rect.left;
+        //y = src_rect.bottom;
+        //this.style.left = x + "px";
+        //this.style.top = y + "px";
         }
         if (pos_str == "left")
         {
-          x = src_rect.left - this_rect.width;
-          y = src_rect.top;
+        //x = src_rect.left - this_rect.width;
+        //y = src_rect.top;
+        this.style.right = src_rect.width + "px";
+        //this.style.top = src_rect.top + "px";
         }
         if (pos_str == "right")
         {
-          x = src_rect.right;
-          y = src_rect.top;
+        //x = src_rect.right;
+        //y = src_rect.top;
+        //this.style.left = x + "px";
+        //this.style.top = y + "px";
         }
       }
-      this.style.left = x + "px";
-      this.style.top = y + "px";
 
       //this.Confine();
     }
@@ -440,5 +441,26 @@ class Menu_Buddy extends HTMLElement
       this.style.top = y + "px";
     }
   }
+
+  class Option_Link
+  {
+    constructor(title, url)
+    {
+      Utils.Bind(this, "On_");
+      
+      this.title = title;
+      this.url = url;
+      this.on_click_fn = this.On_Click;
+    }
+
+    On_Click()
+    {
+      //window.open(this.url, "_blank");
+      window.open(this.url, "_self");
+    }
+  }
+  Menu_Buddy.Option_Link = Option_Link;
+
+  Utils.Register_Element(Menu_Buddy);
 
   export default Menu_Buddy;

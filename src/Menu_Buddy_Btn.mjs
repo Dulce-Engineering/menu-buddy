@@ -1,4 +1,5 @@
 import Menu_Buddy from "./Menu_Buddy.mjs";
+import Utils from "./Utils.js";
 
 class Menu_Buddy_Button extends HTMLElement
 {
@@ -41,7 +42,8 @@ class Menu_Buddy_Button extends HTMLElement
 
   On_Document_Click(event)
   {
-    if (!event.path.includes(this) && !event.path.includes(this.menu_buddy))
+    const path = event.composedPath();
+    if (!path.includes(this) && !path.includes(this.menu_buddy))
     {
       this.menu_buddy.Hide();
     }
@@ -78,15 +80,20 @@ class Menu_Buddy_Button extends HTMLElement
     this.btn.append(...this.childNodes);
     this.btn.addEventListener("click", this.On_Menu_Btn_Click);
 
-    this.menu_buddy = new Menu_Buddy(); // document.createElement("menu-buddy");
+    this.menu_buddy = new Menu_Buddy();
     this.menu_buddy.width = this.menu_width;
     this.menu_buddy.id = "btn_menu";
-    this.menu_buddy.style_src = this.getAttribute("menu-style-src");
+    if (this.hasAttribute("menu-style-src"))
+    {
+      this.menu_buddy.setAttribute("style-src", this.getAttribute("menu-style-src"));
+    }
     this.menu_buddy.menu = this.menu_def;
     this.menu_buddy.addEventListener("clickoption", this.On_Option_Click);
 
     this.shadowRoot.append(this.btn, this.menu_buddy);
   }
 }
+
+Utils.Register_Element(Menu_Buddy_Button);
 
 export default Menu_Buddy_Button;
