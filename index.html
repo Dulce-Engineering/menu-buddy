@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="/src/MB_Select.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="/src/style/MB_Select.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="/src/style/MB_Hr_Menu.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="/src/style/MB_Dlg_Btn.css" media="screen" />
     <style>
       body
       {
@@ -35,20 +37,17 @@
 
     <script type="module">
       import Menu_Buddy from "./src/Menu_Buddy.mjs";
-      import MB_Select from "./src/MB_Select.mjs";
+      //import MB_Select from "./src/MB_Select.mjs";
       import Menu_Buddy_Button from "./src/Menu_Buddy_Btn.mjs";
       import Menu_Buddy_Panel from "./src/Menu_Buddy_Panel.mjs";
-      customElements.define(Menu_Buddy.tname, Menu_Buddy);
-      customElements.define(MB_Select.tname, MB_Select);
-      customElements.define(Menu_Buddy_Button.tname, Menu_Buddy_Button);
-      customElements.define(Menu_Buddy_Panel.tname, Menu_Buddy_Panel);
+      import MB_Hr_Menu from "./src/MB_Hr_Menu.mjs";
+      import MB_Dlg_Btn from "./src/MB_Dlg_Btn.mjs";
 
       window.onload = main;
       function main()
       {
         const nav_panel = Init_Menu("nav_panel", On_Click_Up);
-        const panel_btn = document.getElementById("panel_btn");
-        panel_btn.addEventListener("click", On_Panel_Btn_Click);
+        //panel_btn.addEventListener("click", On_Panel_Btn_Click);
         nav_panel.addEventListener("clickoption", On_Option_Click);
 
         const nav_menu = Init_Menu("nav_menu", On_Click_Up);
@@ -56,7 +55,7 @@
 
         const menu_buddy = Init_Menu("menu_buddy", On_Click_Up);
         menu_buddy.addEventListener("clickoption", On_Option_Click);
-        const menu_btn = document.getElementById("menu_btn");
+        //const menu_btn = document.getElementById("menu_btn");
         menu_btn.addEventListener("click", On_Menu_Btn_Click);
 
         const btn_menu = Init_Menu("menu-buddy-btn", On_Click_Up);
@@ -66,72 +65,84 @@
         [
           {
             id: 1,
-            title: "earth",
+            title: "Earth",
             parent_id: null
           },
           {
             id: 2,
-            title: "moon",
+            title: "Moon",
             parent_id: null
           },
           {
             id: 11,
-            title: "america",
+            title: "America",
             parent_id: 1
           },
           {
             id: 111,
-            title: "north america",
+            title: "North America",
             parent_id: 11,
           },
           {
             id: 1111,
-            title: "canada",
+            title: "Canada",
             parent_id: 111,
           },
           {
             id: 1112,
-            title: "usa",
+            title: "USA",
             parent_id: 111,
           },
           {
             id: 112,
-            title: "central america",
+            title: "Central America",
             parent_id: 11
           },
           {
             id: 113,
-            title: "south america",
+            title: "South America",
             parent_id: 11
           },
           {
             id: 1131,
-            title: "argentina",
+            title: "Argentina",
             parent_id: 113,
           },
           {
             id: 1132,
-            title: "brazil",
+            title: "Brazil",
             parent_id: 113
           },
           {
             id: 1133,
-            title: "chile",
+            title: "Chile",
             parent_id: 113
           },
           {
             id: 12,
-            title: "asia",
+            title: "Asia",
             parent_id: 1
           }
         ];
-        const mb_select = document.getElementById("mb_select");
-        mb_select.Get_Label = 
-          id => menu_options.find(o => o.id == id)?.title;
-        mb_select.Has_Children = 
-          id => menu_options.some(o => o.parent_id == id);
-        mb_select.Get_Children = 
-          id => menu_options.filter(o => o.parent_id == id).map(o => o.id);
+        //const mb_select = document.getElementById("mb_select");
+        //mb_select.Get_Label = id => menu_options.find(o => o.id == id)?.title;
+        //mb_select.Has_Children = id => menu_options.some(o => o.parent_id == id);
+        //mb_select.Get_Children = id => menu_options.filter(o => o.parent_id == id).map(o => o.id);
+
+        mb_hr_menu.addEventListener("clickoption", e => On_Option_Click2(e, menu_options));
+        mb_hr_menu.Get_Label = id => menu_options.find(o => o.id == id)?.title;
+        mb_hr_menu.Has_Children = id => menu_options.some(o => o.parent_id == id);
+        mb_hr_menu.Get_Children = id => menu_options.filter(o => o.parent_id == id).map(o => o.id);
+        mb_hr_menu.Render();
+
+        mb_dlg_btn.addEventListener("clickoption", e => On_Option_Click2(e, menu_options));
+        const options =
+        {
+          Get_Label: id => menu_options.find(o => o.id == id)?.title,
+          Has_Children: id => menu_options.some(o => o.parent_id == id),
+          Get_Children: id => menu_options.filter(o => o.parent_id == id).map(o => o.id),
+        };
+        mb_dlg_btn.Init(options);
       }
 
       function Wait(millis, res) 
@@ -215,6 +226,13 @@
         const option = event.detail;
         alert(option.title);
       }
+
+      function On_Option_Click2(event, menu_options)
+      {
+        const id = event.target.value;
+        const menu_option = menu_options.find(o => o.id == id);
+        alert(menu_option.title);
+      }
     </script>
   </head>
 
@@ -233,11 +251,17 @@
           dropdown menu with relative positioning.</p>
         <menu-buddy-btn id="menu-buddy-btn" xmenu-style-src="menu.css" show-pos="bottom">Menu Buddy Button</menu-buddy-btn>
 
-        <p>The following button triggers rendering of a menu panel programmatically.</p>
-        <button id="panel_btn">Manual Menu Panel</button>
+        <!--p>The following button triggers rendering of a menu panel programmatically.</p>
+        <button id="panel_btn">Manual Menu Panel</button-->
 
-        <p>The following button triggers rendering of a dynamic select button.</p>
-        <mb-select id="mb_select"></mb-select>
+        <p>The following renders an inline heirarchical menu.</p>
+        <mb-hr-menu id="mb_hr_menu"></mb-hr-menu>
+
+        <!--p>The following button triggers rendering of a dynamic select button.</p>
+        <mb-select id="mb_select"></mb-select-->
+
+        <p>The following button triggers rendering of a dialog-based menu.</p>
+        <mb-dlg-btn id="mb_dlg_btn"></mb-dlg-btn>
       </section>
     </div>
   </body>

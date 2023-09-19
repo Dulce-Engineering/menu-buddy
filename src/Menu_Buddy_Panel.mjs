@@ -1,4 +1,5 @@
 import Menu_Buddy from "./Menu_Buddy.mjs";
+import Utils from "./Utils.js";
 
 class Menu_Buddy_Panel extends HTMLElement
 {
@@ -123,5 +124,7 @@ class Menu_Buddy_Panel extends HTMLElement
     return screen;
   }
 }
+
+Utils.Register_Element(Menu_Buddy_Panel);
 
 export default Menu_Buddy_Panel;

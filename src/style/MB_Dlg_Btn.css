@@ -1,0 +1,11 @@
+mb-dlg-btn dialog
+{
+  background-color: #ddd;
+  padding: 5px;
+}
+
+mb-dlg-btn dialog::backdrop
+{
+  background-color: #000;
+  opacity: 0.3;
+}

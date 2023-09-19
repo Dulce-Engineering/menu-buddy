@@ -1,8 +1,8 @@
 import Utils from "./Utils.js";
 
-class MB_Select extends HTMLElement
+class MB_Hr_Menu extends HTMLElement
 {
-  static tname = "mb-select";
+  static tname = "mb-hr-menu";
 
   constructor() 
   {
@@ -75,11 +75,8 @@ class MB_Select extends HTMLElement
 
   On_Click_Close(event, menu_elem)
   {
-    this.select_btn.disabled = false;
-    this.clear_btn.disabled = false;
-
-    this.Hide(menu_elem);
-    document.removeEventListener("click", this.On_Click_Dialog);
+    //this.Hide(menu_elem);
+    this.dispatchEvent(new Event("close"));
   }
 
   async On_Click_Next(event, id, parent_menu_elem)
@@ -91,35 +88,24 @@ class MB_Select extends HTMLElement
 
   async On_Click_Open()
   {
-    this.select_btn.disabled = true;
-    this.clear_btn.disabled = true;
-
     const id = await this.Get_Open_Id();
     const menu_elem = await this.Render_Menu(id);
     this.Show(menu_elem);
-    document.addEventListener("click", this.On_Click_Dialog);
   }
 
   On_Click_Option(event, id, menu_elem)
   {
     this.value = id;
-    this.On_Click_Close(event, menu_elem);
-    this.select_btn.focus();
+    if (this.hasAttribute("close-btn"))
+    {
+      this.On_Click_Close(event, menu_elem);
+    }
+    this.dispatchEvent(new Event("clickoption"));
   }
 
   On_Click_Clear()
   {
     this.value = null;
-  }
-
-  On_Click_Dialog(event)
-  {
-    const path = event.composedPath();
-    const in_menu = path.includes(this.menu);
-    if (!in_menu)
-    {
-      this.On_Click_Close(event, this.menu);
-    }
   }
 
   // Rendering ==================================================================================
@@ -137,39 +123,14 @@ class MB_Select extends HTMLElement
     {
       value = this.getAttribute("def-label") || "";
     }
-
-    this.select_text.innerText = value;
   }
 
   Render()
   {
     this.replaceChildren();
-    this.Render_Select();
-    this.Render_Clear();
-  }
-
-  Render_Select()
-  {
-    this.select_text = document.createElement("span");
-
-    this.select_open = document.createElement("img");
-    this.select_open.src = this.select_open_src;
-
-    this.select_btn = document.createElement("button");
-    this.select_btn.classList.add("mb_sel_btn");
-    this.select_btn.addEventListener("click", this.On_Click_Open);
-    this.select_btn.append(this.select_text, this.select_open);
-
-    this.append(this.select_btn);
-  }
-
-  Render_Clear()
-  {
-    this.clear_btn = document.createElement("button");
-    this.clear_btn.innerHTML = this.clr_btn_html;
-    this.clear_btn.classList.add("mb_clr_btn");
-    this.clear_btn.addEventListener("click", this.On_Click_Clear);
-    this.append(this.clear_btn);
+    //this.Render_Select();
+    //this.Render_Clear();
+    this.On_Click_Open();
   }
 
   async Render_Menu(id)
@@ -177,7 +138,6 @@ class MB_Select extends HTMLElement
     const menu_elem = document.createElement("div");
     menu_elem.classList.add("mb_menu");
     menu_elem.option_id = id;
-    menu_elem.addEventListener("click", this.On_Click_Dialog);
 
     const title_elem = await this.Render_Title(id, menu_elem);
     menu_elem.append(title_elem);
@@ -200,22 +160,16 @@ class MB_Select extends HTMLElement
     elem.innerText = await this.Get_Label(id) || this.getAttribute("root-title") || "Items";
     elem.classList.add("mb_menu_title");
 
-    if (!id)
+    if (!id && this.hasAttribute("close-btn"))
     {
-      const close_elem = document.createElement("button");
-      close_elem.classList.add("mb_close_btn");
-      close_elem.addEventListener
-        ("click", e => this.On_Click_Close(e, menu_elem));
-      elem.prepend(close_elem);
+      elem.addEventListener("click", e => this.On_Click_Close(e, menu_elem));
+      elem.classList.add("mb_close_btn");
     }
-    else
+    else if (id)
     {
       const parent_id = await this.Get_Parent(id);
-      const back_elem = document.createElement("button");
-      back_elem.classList.add("mb_back_btn");
-      back_elem.addEventListener
-        ("click", e => this.On_Click_Back(e, parent_id, menu_elem));
-      elem.prepend(back_elem);
+      elem.addEventListener("click", e => this.On_Click_Back(e, parent_id, menu_elem));
+      elem.classList.add("mb_back_btn");
     }
 
     return elem;
@@ -236,8 +190,7 @@ class MB_Select extends HTMLElement
     {
       const next_elem = document.createElement("button");
       next_elem.classList.add("mb_next_btn");
-      next_elem.addEventListener
-        ("click", e => this.On_Click_Next(e, id, parent_menu_elem));
+      next_elem.addEventListener("click", e => this.On_Click_Next(e, id, parent_menu_elem));
       option_elem.append(next_elem);
     }
 
@@ -282,6 +235,6 @@ class MB_Select extends HTMLElement
   }
 }
 
-Utils.Register_Element(MB_Select);
+Utils.Register_Element(MB_Hr_Menu);
 
-export default MB_Select;
+export default MB_Hr_Menu;

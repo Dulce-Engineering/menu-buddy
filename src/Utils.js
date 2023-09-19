@@ -107,6 +107,11 @@ class Utils
     return res;
   }
 
+  static Back_And_Refresh()
+  {
+    document.referrer ? window.location = document.referrer : history.back();
+  }
+
   static Bind(obj, fn_prefix)
   {
     const members = Utils.getMethods(obj);
@@ -239,6 +244,30 @@ class Utils
     }
   }
 
+  static Clone_Template(template_elem)
+  {
+    const clone = template_elem.content.cloneNode(true);
+    Utils.Set_Id_Shortcuts(clone, clone);
+    return clone;
+  }
+
+  static Connect_Store(elem, On_Store_Connected, event = "connected")
+  {
+    let store_elem = null;
+
+    const store_id = elem.getAttribute("store-id");
+    if (!Utils.isEmpty(store_id))
+    {
+      store_elem = document.getElementById(store_id);
+      if (store_elem)
+      {
+        store_elem.addEventListener(event, On_Store_Connected);
+      }
+    }
+
+    return store_elem;
+  }
+
   static Disable(id)
   {
     const elem = document.getElementById(id);
@@ -305,7 +334,24 @@ class Utils
   static async fetchJson(url, method, xApiKey, body, auth)
   {
     let res = null;
-    const options = Utils.setOptions(method, xApiKey, 'application/json', body, auth);
+    const options =
+    {
+      method,
+      headers:
+      {
+        'Content-Type': 'application/json',
+        'x-api-key': xApiKey
+      }
+    };
+
+    if (body)
+    {
+      options.body = body;
+    }
+    if (auth)
+    {
+      options.headers.Authorization = auth;
+    }
     
     const httpRes = await fetch(url, options);
     if (httpRes)
@@ -327,6 +373,18 @@ class Utils
     }
 
     return Utils.fetchJson(url, "POST", xApiKey, body, auth);
+  }
+
+  static Focus_Input()
+  {
+    var input = document.getElementsByTagName('INPUT');
+    for (var i = 0, n = input.length; i < n; i = i + 1)
+    {
+      if (input[i].value.length !== "")
+      {
+        input[i].focus();
+      }
+    }
   }
 
   static Get_Attr_Def(elem, name, def)
@@ -353,15 +411,7 @@ class Utils
 
   static getFromLocalStorge(key, defaultValue)
   {
-    let res = defaultValue;
-
-    const storageStr = localStorage.getItem(key);
-    if (!Utils.isEmpty(storageStr))
-    {
-      res = storageStr;
-    }
-
-    return res;
+    return Utils.Get_From_Storage(localStorage, key, defaultValue);
   }
 
   static getFromLocalStorgeInt(key, defaultValue)
@@ -371,7 +421,33 @@ class Utils
 
   static getFromLocalStorgeJson(key, defaultValue)
   {
-    return JSON.parse(Utils.getFromLocalStorge(key, defaultValue));
+    return Utils.Get_From_Storage_JSON(localStorage, key, defaultValue);
+  }
+
+  static Get_From_Storage(storage, key, defaultValue)
+  {
+    let res = defaultValue;
+
+    const storageStr = storage.getItem(key);
+    if (!Utils.isEmpty(storageStr))
+    {
+      res = storageStr;
+    }
+
+    return res;
+  }
+
+  static Get_From_Storage_JSON(storage, key, defaultValue)
+  {
+    let res = null;
+
+    const json_str = Utils.Get_From_Storage(storage, key, defaultValue);
+    if (!Utils.isEmpty(json_str))
+  {
+      res = JSON.parse(json_str);
+    }
+
+    return res;
   }
 
   static getMethods(obj)
@@ -393,18 +469,41 @@ class Utils
     return res;
   }
 
-  static Handle_Errors(db)
+  static async Get_Storage_Download_URL(fb_strg, id)
   {
-    if (db.last_error)
+    const ref = fb_strg.ref().child(id);
+    let url = null;
+
+    try
     {
-    if (db.last_error.code == "permission-denied")
-    {
-      alert("You do not have permission.");
+      url = await ref.getDownloadURL();
     }
-    else
+    catch (error)
     {
-        alert("There was a problem.");
+      console.error(error);
+    }
+
+    return url;
+  }
+
+  static Get_Store_Id(user_uid)
+    {
+    let store_id = null;
+
+    if (user_uid)
+    {
+      const key = "store_id." + user_uid;
+      store_id = localStorage.getItem(key);
       }
+
+    return store_id;
+  }
+
+  static Handle_Errors(api_class)
+  {
+    if (api_class?.last_rpc?.error)
+    {
+      alert(api_class.last_rpc.error.code + ": " + api_class.last_rpc.error.message);
     }
     else
     {
@@ -438,14 +537,32 @@ class Utils
     }
   }
 
-  static async import_api(config)
+  static Hide_Element(elem)
   {
-    const config_env = config.get();
-    const api = await import(config_env.api_client_url);
-    for (const comp_class in api.default)
+    if (elem)
     {
-      api.default[comp_class].server_host = config_env.api_server_host;
-      window[comp_class] = api.default[comp_class];
+      const def_display = getComputedStyle(elem).getPropertyValue("display");
+      if (def_display && def_display != "none")
+      {
+        elem.style.setProperty("--def-display", def_display);
+      }
+      
+      elem.style.display = "none";
+    }
+  }
+
+  static async Import_API(config, on_pre_fetch_fn, on_fetch_fn, token, on_error_fn)
+    {
+    const api = await import(config.api_client_url);
+    for (const comp_class_name in api.default)
+    {
+      const comp_class = api.default[comp_class_name];
+      comp_class.server_host = config.api_server_host;
+      comp_class.On_Fetch = on_fetch_fn;
+      comp_class.On_Pre_Fetch = on_pre_fetch_fn;
+      comp_class.headers = !Utils.isEmpty(token) ? {authorization: "Firebase " + token} : null;
+      comp_class.On_Error = on_error_fn;
+      window[comp_class_name] = comp_class;
     }
     
     return api.default;
@@ -477,7 +594,14 @@ class Utils
     }
     else if (typeOfItems == "object")
     {
+      if (items?.constructor?.name == "NodeList")
+      {
+        res = length > 0;
+      }
+      else
+      {
       res = Utils.isEmptyObj(items);
+    }
     }
     else if (items.length == 0)
     {
@@ -641,14 +765,77 @@ class Utils
     }
   }
 
-  static Set_Id_Shortcuts(src_elem, dest_elem)
+  static async Render_Wait(container_elem, fn)
   {
-    const elems = src_elem.querySelectorAll("[id]");
+    container_elem.classList.add("waiting");
+    await fn();
+    container_elem.classList.remove("waiting");
+  }
+
+  static async Render_Wait_Btn(container_elem, fn, class_name)
+  {
+    let container_class_name = class_name;
+    if (Utils.isEmpty(class_name) || class_name == "debug")
+    {
+      container_class_name = "waiting_btn";
+    }
+
+    container_elem.classList.add(container_class_name);
+    if (class_name != "debug")
+  {
+    await fn();
+      container_elem.classList.remove(container_class_name);
+    }
+  }
+
+  static Set_APIs_Auth(token, apis)
+  {
+    for (const comp_class_name in apis)
+    {
+      const comp_class = apis[comp_class_name];
+      if (token)
+      {
+        comp_class.headers = {authorization: "Firebase " + token};
+      }
+      else
+      {
+        comp_class.headers = null;
+      }
+    }
+  }
+
+  static Set_Filter(filters, id, value)
+  {
+    let res = null;
+
+    if (filters)
+    {
+      filters[id] = value;
+      res = filters;
+    }
+    else
+    {
+      res = {};
+      res[id] = value;
+    }
+
+    return res;
+  }
+
+  static Set_Id_Shortcuts(src_elem, dest_elem, attr_name = "id")
+  {
+    const elems = src_elem.querySelectorAll("[" + attr_name + "]");
     for (const elem of elems)
     {
-      const id = elem.id;
-      dest_elem[id] = elem;
+      const id_value = elem.getAttribute(attr_name);
+      dest_elem[id_value] = elem;
     }
+  }
+
+  static setLocalStorgeJson(key, value)
+  {
+    const value_str = JSON.stringify(value);
+    localStorage.setItem(key, value_str);
   }
 
   static setOptions(method, xApiKey, contentType, body, auth)
@@ -675,6 +862,15 @@ class Utils
     return options;
   }
 
+  static Set_Store_Id(user_uid, id)
+  {
+    if (user_uid)
+    {
+      const key = "store_id." + user_uid;
+      localStorage.setItem(key, id);
+    }
+  }
+
   static Show(id, parent_elem)
   {
     if (!parent_elem)
@@ -683,13 +879,21 @@ class Utils
     }
 
     const elem = parent_elem.querySelector("#" + id);
+    Utils.Show_Element(elem);
+  }
+
+  static Show_Element(elem)
+  {
     if (elem)
     {
-      elem.style.removeProperty("display");
       const def_display = getComputedStyle(elem).getPropertyValue("--def-display");
       if (def_display)
       {
         elem.style.display = def_display;
+      }
+      else
+      {
+        elem.style.removeProperty("display");
       }
     }
   }
@@ -799,6 +1003,28 @@ class Utils
     return newPrice;
   }
 
+  static To_Currency(value, currency)
+  {
+    let res = null;
+
+    if (currency)
+    {
+      const style = 'currency';
+      const formatter = new Intl.NumberFormat('en-US', { style, currency });
+      // These options are needed to round to whole numbers if that's what you want.
+      //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+      //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+
+      res = formatter.format(value);
+    }
+    else
+    {
+      res = Utils.To_AUD(value);
+    }
+
+    return res;
+  }
+
   static To_Class_Obj(obj, class_obj)
   {
     if (obj)
@@ -846,11 +1072,34 @@ class Utils
     return days;
   }
 
-  static toDocument(html) 
+  static toDocument(html, src_elems) 
   {
     var template = document.createElement('template');
     template.innerHTML = html.trim();
-    return template.content;
+    const template_elems = template.content;
+
+    if (src_elems)
+    {
+      const slot_elems = template_elems.querySelectorAll("slot"); 
+      if (!Utils.isEmpty(slot_elems))
+      {
+        for (const slot_elem of slot_elems)
+        {
+          const content_elems = src_elems.querySelectorAll(`[slot='${slot_elem.name}']`);
+          if (!Utils.isEmpty(content_elems))
+          {
+            slot_elem.replaceWith(...content_elems);
+          }
+        }
+      }
+    }
+  
+    return template_elems;
+  }
+
+  static Get_Slot_Content(src_elems, slot_name)
+  {
+    return src_elems.querySelector(`[slot='${slot_name}']`);
   }
 
   static toDollarsCents(price)
@@ -959,6 +1208,16 @@ class Utils
     return res;
   }
 
+  static To_Local_Date_Str(unix_time)
+  {
+    return !Utils.isEmpty(unix_time) ? (new Date(unix_time)).toDateString() : null;
+  }
+
+  static To_Local_Date_Time_Str(unix_time)
+  {
+    return !Utils.isEmpty(unix_time) ? (new Date(unix_time)).toLocaleString() : null;
+  }
+
   static toNull(value)
   {
     let res = value;
@@ -994,6 +1253,18 @@ class Utils
     }
 
     return res;
+  }
+
+  static On_Enter_Do_Click(button)
+  {
+    window.addEventListener("keyup", On_Window_Keyup);
+    function On_Window_Keyup(event)
+    {
+      if (event.which == 13) 
+      {
+        button.click();
+      }
+    }
   }
 }
 
