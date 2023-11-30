@@ -64,6 +64,10 @@ class MB_Hr_Menu extends HTMLElement
   {
   }
 
+  Is_Visible(id)
+  {
+  }
+
   // Events =====================================================================================
 
   async On_Click_Back(event, id, menu_elem)
@@ -86,13 +90,6 @@ class MB_Hr_Menu extends HTMLElement
     this.Hide(parent_menu_elem);
   }
 
-  async On_Click_Open()
-  {
-    const id = await this.Get_Open_Id();
-    const menu_elem = await this.Render_Menu(id);
-    this.Show(menu_elem);
-  }
-
   On_Click_Option(event, id, menu_elem)
   {
     this.value = id;
@@ -101,6 +98,10 @@ class MB_Hr_Menu extends HTMLElement
       this.On_Click_Close(event, menu_elem);
     }
     this.dispatchEvent(new Event("clickoption"));
+    if (id.click)
+    {
+      id.click(this);
+    }
   }
 
   On_Click_Clear()
@@ -128,9 +129,14 @@ class MB_Hr_Menu extends HTMLElement
   Render()
   {
     this.replaceChildren();
-    //this.Render_Select();
-    //this.Render_Clear();
-    this.On_Click_Open();
+    this.Render_Update();
+  }
+
+  async Render_Update()
+  {
+    const id = await this.Get_Open_Id();
+    const menu_elem = await this.Render_Menu(id);
+    this.Show(menu_elem);
   }
 
   async Render_Menu(id)
@@ -145,9 +151,12 @@ class MB_Hr_Menu extends HTMLElement
     if (await this.Has_Children(id))
     {
       const child_ids = await this.Get_Children(id);
+      const visible_child_ids = child_ids.filter(id => this.Is_Visible(id));
+
       const child_elems_p = 
-        child_ids.map(id => this.Render_Option(id, menu_elem));
+        visible_child_ids.map(id => this.Render_Option(id, menu_elem));
       const child_elems = await Promise.all(child_elems_p);
+
       menu_elem.append(...child_elems);
     }
 

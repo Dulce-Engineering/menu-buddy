@@ -1,4 +1,5 @@
 import Utils from "./Utils.js";
+import Mb_Hr_Menu from "./MB_Hr_Menu.mjs";
 
 class MB_Dlg_Btn extends HTMLElement
 {
@@ -20,17 +21,32 @@ class MB_Dlg_Btn extends HTMLElement
   {
   }
 
-  Init(options)
+  set options_flat(array)
   {
-    this.mb_menu.Get_Label = options.Get_Label;
-    this.mb_menu.Has_Children = options.Has_Children;
-    this.mb_menu.Get_Children = options.Get_Children;
-    this.mb_menu.Render();
+    this.options =
+    {
+      Get_Label: o => o?.title,
+      Has_Children: o => o == null ? true : false,
+      Get_Children: o => o == null ? array : null,
+      Is_Visible: o => o == null || o.visible == null || o.visible == undefined || o.visible == true
+    };
+    this.Set_Menu_Options();
   }
 
   get value()
   {
     return this.mb_menu?.value;
+  }
+
+  Set_Menu_Options()
+  {
+    if (this.options && this.mb_menu)
+    {
+      this.mb_menu.Get_Label = this.options.Get_Label;
+      this.mb_menu.Has_Children = this.options.Has_Children;
+      this.mb_menu.Get_Children = this.options.Get_Children;
+      this.mb_menu.Is_Visible = this.options.Is_Visible;
+    }
   }
 
   // Events =====================================================================================
@@ -52,23 +68,6 @@ class MB_Dlg_Btn extends HTMLElement
 
   // Rendering ==================================================================================
 
-  async Render_Value(id)
-  {
-    let value = null;
-
-    if (id)
-    {
-      value = await this.Get_Path(id);
-    }
-
-    if (Utils.isEmpty(value))
-    {
-      value = this.getAttribute("def-label") || "";
-    }
-
-    this.select_text.innerText = value;
-  }
-
   Render()
   {
     const html = `
@@ -82,8 +81,10 @@ class MB_Dlg_Btn extends HTMLElement
     Utils.Set_Id_Shortcuts(this, this, "cid");
 
     this.menu_btn.addEventListener("click", this.On_Click_Menu);
+
     this.mb_menu.addEventListener("close", this.On_Close_Menu);
     this.mb_menu.addEventListener("clickoption", this.On_Click_Option);
+    this.Set_Menu_Options();
   }
 }
 
